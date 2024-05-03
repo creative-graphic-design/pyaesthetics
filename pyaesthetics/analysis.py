@@ -57,9 +57,9 @@ def textDetection(img):
     """
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     with NamedTemporaryFile() as temp_file:
-		cv2.imwrite(temp_file.name, img)
+        cv2.imwrite(temp_file.name, img)
         text = pytesseract.image_to_string(Image.open(temp_file.name))
-	return len(text)
+    return len(text)
 
 
 def analyzeImage(pathToImg, method='fast',resize=True, newSize=(600,400), minStd = 10, minSize = 20):
