@@ -9,4 +9,4 @@ from . import contrast
 from . import saturation
 
 # This is used to print out the package version
-__version__ = '0.0.7.8' #Version Control
+__version__ = "0.0.7.8"  # Version Control
