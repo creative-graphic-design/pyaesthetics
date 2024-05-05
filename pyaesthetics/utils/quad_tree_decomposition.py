@@ -31,6 +31,9 @@ class DecomposeOutput(object):
     def b(self) -> int:
         return self.y + self.h
 
+    def to_coordinates(self) -> Tuple[int, int, int, int]:
+        return self.x, self.y, self.w, self.h
+
 
 @dataclass
 class QuadTreeDecomposer(object):
