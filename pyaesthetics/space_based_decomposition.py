@@ -10,15 +10,17 @@ Created on Sat Apr 21 09:40:45 2018
 @author: giulio
 """
 
-import os  # to handle filesystem files
+from dataclasses import dataclass
+from typing import List, Literal, Optional
+
 import cv2  # for image manipulation
-import numpy as np
-from imutils import perspective
-from imutils import contours
-import imutils
 import matplotlib.pyplot as plt  # for data visualization
-import pytesseract
+import numpy as np
+from imutils import contours, perspective
 from PIL import Image
+from PIL.Image import Image as PilImage
+
+from pyaesthetics.utils import detect_text
 
 ###############################################################################
 #                                                                             #
@@ -27,24 +29,39 @@ from PIL import Image
 ###############################################################################
 """ Thìs sections handles Quadratic Tree Decomposition. """
 
-
-def textDetection(img):
-    """This function uses pytesseract to get information about the presence of text in an image
-
-    :param img: image to analyze, in RGB
-    :type img: numpy.ndarray
-    :return: number of character in the text
-    :rtype: int
-
-    """
-    filename = "{}.png".format(os.getpid())
-    cv2.imwrite(filename, img)
-    text = pytesseract.image_to_string(Image.open(filename))
-    os.remove(filename)
-    return len(text)
+AreaType = Literal["Text", "Image"]
 
 
-def textImageRatio(areas):
+@dataclass
+class AreaCoordinates(object):
+    xmin: int
+    xmax: int
+    ymin: int
+    ymax: int
+
+
+@dataclass
+class AreaOutput(object):
+    area: int
+    coordinates: Optional[AreaCoordinates] = None
+    area_type: Optional[AreaType] = None
+
+
+@dataclass
+class AreasOutput(object):
+    areas: List[AreaOutput]
+    image: Optional[PilImage] = None
+
+
+@dataclass
+class TextImageRatioOutput(object):
+    text_image_ratio: float
+    text_area: int
+    image_area: int
+    num_areas: int
+
+
+def get_text_image_ratio(areas_output: AreasOutput) -> TextImageRatioOutput:
     """This function evaluates the text on image ration, as well as the total area occupied by both image and text.
 
     :param areas: areas dict as extracted by the getAreas function
@@ -52,137 +69,139 @@ def textImageRatio(areas):
     :return: a dict containing the text / (image+text) ratio , total area of text and total area of images and number of images
     :rtype: dict
     """
-    image = []
-    text = []
-    for area in areas:
-        if areas[area]["type"] == "Text":
-            text.append(areas[area]["area"])
+    image, text = [], []
+
+    for area in areas_output.areas:
+        if area.area_type == "Text":
+            text.append(area.area)
+        elif area.area_type == "Image":
+            image.append(area.area)
         else:
-            image.append(areas[area]["area"])
+            raise ValueError(f"Area type {area.area_type} not recognized")
 
-    """ ratio is 0.5 if picture and text occupy the same area, more in more text, less if more images. """
+    # ratio is 0.5 if picture and text occupy the same area, more in more text, less if more images.
     ratio = sum(text) / (sum(image) + sum(text))
-    return {
-        "textImageRatio": ratio,
-        "textArea": sum(text),
-        "imageArea": sum(image),
-        "nImages": len(image),
-    }
+
+    return TextImageRatioOutput(
+        text_image_ratio=ratio,
+        text_area=sum(text),
+        image_area=sum(image),
+        num_areas=len(image),
+    )
 
 
-def getAreas(
-    img,
-    minArea=100,
-    resize=True,
-    newSize=[600, 400],
-    plot=False,
-    coordinates=False,
-    areatype=True,
-):
+def get_areas(
+    img: PilImage,
+    min_area: int = 100,
+    is_resize: bool = True,
+    new_size=[600, 400],
+    is_plot: bool = False,
+    is_coordinates: bool = False,
+    is_areatype: bool = False,
+) -> AreasOutput:
     """Adapted from https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/"""
+    assert img.mode == "RGB", f"Image must be in RGB mode but is in {img.mode}"
+    img_arr = np.array(img)
 
-    img_original = img  # source of the image
-    oh, ow, dept = img_original.shape  # shape of the orignal image
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # conversion to greyscale
-    if resize:
-        img = cv2.resize(
-            img, (newSize[0], newSize[1]), interpolation=cv2.INTER_CUBIC
+    img_original_arr = img_arr.copy()  # source of the image
+    ow, oh, _ = img_original_arr.shape  # shape of the orignal image
+    img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)  # conversion to greyscale
+
+    if is_resize:
+        img_arr = cv2.resize(
+            img_arr, new_size, interpolation=cv2.INTER_CUBIC
         )  # resizing
-    img = cv2.GaussianBlur(img, (3, 3), 0)  # apply a Gaussina filter
-    edged = cv2.Canny(img, 10, 100)
-    edged = cv2.dilate(edged, None, iterations=1)
-    edged = cv2.erode(edged, None, iterations=1)  # improved edge detection
 
-    cnts = cv2.findContours(
-        edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-    )  # get the contours
-    cnts = cnts[0]
+    img_arr = cv2.GaussianBlur(img_arr, (3, 3), 0)  # apply a Gaussina filter
+    edged = cv2.Canny(img_arr, 10, 100)
+    edged = cv2.dilate(edged, kernel=None, iterations=1)  # type: ignore
 
-    if len(cnts) > 0:
-        (cnts, _) = contours.sort_contours(cnts)
+    edged = cv2.erode(edged, kernel=None, iterations=1)  # type: ignore
 
-        boxes = []
-        for c in cnts:  # for each contour
-            box = cv2.minAreaRect(c)
-            box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
-            box = np.array(box, dtype="int")
-            box = perspective.order_points(box)
-            box = box.astype("int")
-            if resize:
-                box = np.array(
+    # get the contours
+    cnts, _ = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    if len(cnts) < 1:
+        return AreasOutput(areas=[])
+
+    (cnts, _) = contours.sort_contours(cnts)
+
+    def get_bboxes_from_contours(cnts: List[np.ndarray]):
+        bboxes = []
+        for cnt in cnts:  # for each contour
+            min_area_rect = cv2.minAreaRect(cnt)
+            min_area_rect_arr = cv2.boxPoints(min_area_rect)
+            min_area_rect_arr = min_area_rect_arr.astype("int")
+            min_area_rect_arr = perspective.order_points(min_area_rect_arr)
+            min_area_rect_arr = min_area_rect_arr.astype("int")
+
+            if is_resize:
+                # convert the box to the size of the original image
+                min_area_rect_arr = np.array(
                     [
                         [
-                            int(corner[0] * ow / newSize[0]),
-                            int(corner[1] * oh / newSize[1]),
+                            int(corner[0] * ow / new_size[0]),
+                            int(corner[1] * oh / new_size[1]),
                         ]
-                        for corner in box
+                        for corner in min_area_rect_arr
                     ]
-                )  # convert the box to the size of the original image
+                )
             else:
-                box = np.array(
-                    [[int(corner[0]), int(corner[1])] for corner in box]
-                )  # convert the box to the size of the original image
-            if plot:
-                cv2.drawContours(img_original, [box], -1, (0, 255, 0), 2)
-            boxes.append(box)
+                # convert the box to the size of the original image
+                min_area_rect_arr = np.array(
+                    [[int(corner[0]), int(corner[1])] for corner in min_area_rect_arr]
+                )
+            bboxes.append(min_area_rect_arr)
+        return bboxes
 
-        if plot:
-            plt.figure("Space based Decomposition")
-            plt.imshow(img_original)
-            plt.title("Space based decomposition")
-            plt.xticks([], [])
-            plt.yticks([], [])
-            plt.show()
-        """ Now, we can calculate the area of each box, and we can detect if some text is present"""
-        areas = {}
+    def plot_contours(img_arr: np.ndarray, bboxes: List[np.ndarray]) -> PilImage:
+        for bbox in bboxes:
+            cv2.drawContours(img_arr, [bbox], -1, (0, 255, 0), 2)
+        return Image.fromarray(img_arr)
 
-        areasize = []
-        for box in range(
-            0, len(boxes)
-        ):  # to avoid errors due to two or more rectangles of the same Area
-            t = np.transpose(boxes[box])
-            minX = min(t[0])
-            maxX = max(t[0])
-            minY = min(t[1])
-            maxY = max(t[1])
-            area = (maxX - minX) * (maxY - minY)
-            if area > minArea:
-                areasize.append(area)
-                imgportion = img_original[minY:maxY, minX:maxX]
-                if len(imgportion) > 0:
-                    if areatype:
-                        if textDetection(imgportion) > 0:
-                            areas[box] = {"area": area, "type": "Text"}
-                        else:
-                            areas[box] = {"area": area, "type": "Image"}
+    bboxes = get_bboxes_from_contours(cnts)  # type: ignore
+    plot_img = plot_contours(img_original_arr, bboxes) if is_plot else None  # type: ignore
 
-                    else:
-                        areas[box] = {"area": area}
-                    if coordinates:
-                        areas[box]["coordinates"] = {
-                            "xmin": minX,
-                            "xmax": maxX,
-                            "ymin": minY,
-                            "ymax": maxY,
-                        }
+    """ Now, we can calculate the area of each box, and we can detect if some text is present"""
+    areas = []
 
-    return areas
+    def get_area_type(is_areatype: bool, imgportion: np.ndarray) -> Optional[AreaType]:
+        if not is_areatype:
+            return None
 
+        num_texts = detect_text(Image.fromarray(imgportion))
+        return "Text" if num_texts > 0 else "Image"
 
-###############################################################################
-#                                                                             #
-#                                  DEBUG                                      #
-#                                                                             #
-###############################################################################
+    def get_area_coordinates(
+        is_coordinates: bool, xmin: int, xmax: int, ymin: int, ymax: int
+    ) -> Optional[AreaCoordinates]:
+        if not is_coordinates:
+            return None
 
-""" For debug purposes."""
+        return AreaCoordinates(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
 
-if __name__ == "__main__":
-    img = "/home/giulio/Repositories/PrettyWebsite/prettywebsite/sample2.jpg"  # path to a sample image
+    for bbox in bboxes:
+        t = np.transpose(bbox)
+        xmin, xmax = min(t[0]), max(t[0])
+        ymin, ymax = min(t[1]), max(t[1])
+        area = (xmax - xmin) * (ymax - ymin)
 
-    img = cv2.imread(img)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    areas = getAreas(img, plot=False, coordinates=True, areatype=False)
+        if area <= min_area:
+            continue
 
-    # print(areas)
-    # print(textImageRatio(areas))
+        imgportion = img_original_arr[ymin:ymax, xmin:xmax]
+        if len(imgportion) < 1:
+            continue
+
+        area_type = get_area_type(is_areatype, imgportion)
+        area_coordinates = get_area_coordinates(is_coordinates, xmin, xmax, ymin, ymax)
+
+        areas.append(
+            AreaOutput(
+                area=area,
+                coordinates=area_coordinates,
+                area_type=area_type,
+            )
+        )
+
+    return AreasOutput(areas=areas, image=plot_img)
