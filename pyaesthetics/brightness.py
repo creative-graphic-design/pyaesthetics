@@ -37,6 +37,7 @@ def relative_luminance_bt709(img: PilImage) -> float:
     :return: mean brightness
     :rtype: float
     """
+    assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
     img_arr = sRGB2RGB(img_arr)
@@ -62,6 +63,7 @@ def relative_luminance_bt601(img: PilImage) -> float:
     :return: mean brightness
     :rtype: float
     """
+    assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
     img_arr = sRGB2RGB(img_arr)

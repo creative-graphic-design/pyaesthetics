@@ -31,6 +31,7 @@ def colorfulness_hsv(img: PilImage):
     :return: colorfulness index
     :rtype: float
     """
+    assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
     img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2HSV)
@@ -58,6 +59,8 @@ def colorfulness_rgb(img: PilImage):
     :return: colorfulness index
     :rtype: float
     """
+    assert img.mode == "RGB", "Image must be in RGB mode"
+
     img_arr = np.array(img)
 
     # First we initialize 3 arrays

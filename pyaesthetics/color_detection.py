@@ -235,6 +235,7 @@ def get_colors_w3c(
     :return: percentage distribution of colors according to the W3C sixteens basic colors
     :rtype: list of shape ncolors x 2, where x[0] is the color name and x[1] the percentage of pixels most similar to that color in the image
     """
+    assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
 
