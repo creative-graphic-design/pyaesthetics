@@ -1,10 +1,35 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
 from PIL import ImageDraw
 from PIL.Image import Image as PilImage
+
+
+@dataclass
+class DecomposeOutput(object):
+    x: int
+    y: int
+    w: int
+    h: int
+    std: int
+
+    @property
+    def l(self) -> int:
+        return self.x
+
+    @property
+    def t(self) -> int:
+        return self.y
+
+    @property
+    def r(self) -> int:
+        return self.x + self.w
+
+    @property
+    def b(self) -> int:
+        return self.y + self.h
 
 
 @dataclass
@@ -20,8 +45,8 @@ class QuadTreeDecomposer(object):
     min_size: int
     img: PilImage
 
-    _img_arr: Optional[np.ndarray] = None
-    _blocks: Optional[List[Tuple[int, int, int, int, int]]] = None
+    _img_arr: Optional[np.ndarray] = field(default=None, repr=False)
+    _blocks: Optional[List[DecomposeOutput]] = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         assert (
@@ -36,7 +61,7 @@ class QuadTreeDecomposer(object):
         return self._img_arr
 
     @property
-    def blocks(self) -> List[Tuple[int, int, int, int, int]]:
+    def blocks(self) -> List[DecomposeOutput]:
         if self._blocks is None:
             self._blocks = self.decompose(x=0, y=0)
         return self._blocks
@@ -47,16 +72,13 @@ class QuadTreeDecomposer(object):
         draw = ImageDraw.Draw(img)
 
         for block in blocks:
-            xy = (block[0], block[1], block[0] + block[2], block[1] + block[3])
+            xy = (block.l, block.t, block.r, block.b)
             draw.rectangle(xy=xy, outline=edgecolor, width=linewidth)
 
         return img
 
-    def decompose(self, x: int, y: int) -> List[Tuple[int, int, int, int, int]]:
-        blocks = list(self._decompose(self.img_arr, x, y))
-        if self._blocks is None:
-            self._blocks = blocks
-        return blocks
+    def decompose(self, x: int, y: int) -> List[DecomposeOutput]:
+        return list(self._decompose(self.img_arr, x, y))
 
     def _decompose(self, img: np.ndarray, x: int, y: int):
         """This function evaluate the mean and std of an image, and decides Whether to perform or not other 2 splits of the leave.
@@ -86,4 +108,4 @@ class QuadTreeDecomposer(object):
                 yield from self._decompose(img1, x, y)
                 yield from self._decompose(img2, x, y + h2)
 
-        yield (x, y, w, h, std)
+        yield DecomposeOutput(x=x, y=y, w=w, h=h, std=std)
