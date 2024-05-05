@@ -1,4 +1,4 @@
-from . import quad_tree_decomposition  # NOQA
+from . import visual_complexity  # NOQA
 from . import space_based_decomposition  # NOQA
 from . import colorfulness  # NOQA
 from . import brightness  # NOQA
