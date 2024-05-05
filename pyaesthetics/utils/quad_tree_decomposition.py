@@ -1,44 +1,32 @@
-"""
-This file contains class and functions to perform a Quadratic Tree decomposition
-of an image and to visually inspect it.
-
-Created on Mon Apr 16 11:49:45 2018
-
-@author: giulio
-"""
-
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional, Tuple
 
-import cv2  # for image manipulation
+import cv2
 import numpy as np
 from PIL import ImageDraw
 from PIL.Image import Image as PilImage
-
-###############################################################################
-#                                                                             #
-#                      Quadratic Tree Decomposition                           #
-#                                                                             #
-###############################################################################
-""" Thìs sections handles Quadratic Tree Decomposition. """
 
 
 @dataclass
 class QuadTreeDecomposer(object):
     """This class is used to perfrom a QuadTree decomposition of an image.
 
-    During initialization, QuadTree decomposition is done and result are store in self.blocks as a list containing [x,y,height, width,Std].
+    During initialization, QuadTree decomposition is done and result are store in self.blocks as a list containing [x, y, w, h , std].
 
     To visualize the results, use get_plot().
     """
 
     min_std: int
     min_size: int
-
     img: PilImage
+
     _img_arr: Optional[np.ndarray] = None
+    _blocks: Optional[List[Tuple[int, int, int, int, int]]] = None
 
     def __post_init__(self) -> None:
+        assert (
+            self.img.mode == "RGB"
+        ), f"Image must be in RGB mode but is in {self.img.mode} mode"
         img_arr = np.array(self.img)
         self._img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)
 
@@ -47,8 +35,14 @@ class QuadTreeDecomposer(object):
         assert self._img_arr is not None
         return self._img_arr
 
+    @property
+    def blocks(self) -> List[Tuple[int, int, int, int, int]]:
+        if self._blocks is None:
+            self._blocks = self.decompose(x=0, y=0)
+        return self._blocks
+
     def get_plot(self, edgecolor="red", linewidth=1) -> PilImage:
-        blocks = list(self.decompose(img=self.img_arr, x=0, y=0))
+        blocks = self.blocks
         img = self.img.copy()
         draw = ImageDraw.Draw(img)
 
@@ -58,7 +52,13 @@ class QuadTreeDecomposer(object):
 
         return img
 
-    def decompose(self, img: np.ndarray, x: int, y: int):
+    def decompose(self, x: int, y: int) -> List[Tuple[int, int, int, int, int]]:
+        blocks = list(self._decompose(self.img_arr, x, y))
+        if self._blocks is None:
+            self._blocks = blocks
+        return blocks
+
+    def _decompose(self, img: np.ndarray, x: int, y: int):
         """This function evaluate the mean and std of an image, and decides Whether to perform or not other 2 splits of the leave.
 
         :param img: img to analyze
@@ -77,13 +77,13 @@ class QuadTreeDecomposer(object):
                 w2 = int(w / 2)
                 img1 = img[0:h, 0:w2]
                 img2 = img[0:h, w2:]
-                yield from self.decompose(img1, x, y)
-                yield from self.decompose(img2, x + w2, y)
+                yield from self._decompose(img1, x, y)
+                yield from self._decompose(img2, x + w2, y)
             else:
                 h2 = int(h / 2)
                 img1 = img[0:h2, 0:]
                 img2 = img[h2:, 0:]
-                yield from self.decompose(img1, x, y)
-                yield from self.decompose(img2, x, y + h2)
+                yield from self._decompose(img1, x, y)
+                yield from self._decompose(img2, x, y + h2)
 
         yield (x, y, w, h, std)
