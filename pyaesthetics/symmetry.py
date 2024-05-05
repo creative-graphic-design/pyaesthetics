@@ -53,10 +53,10 @@ def get_symmetry(img: PilImage, min_std: int, min_size: int, is_plot: bool = Fal
     assert img.mode == "RGB", f"Image must be in RGB mode but is in {img.mode}"
     img_arr = np.array(img)
 
-    h, w, _ = img_arr.shape
-    if h % 2 != 0:
-        img_arr = img_arr[:-1, :, :]
+    w, h, _ = img_arr.shape
     if w % 2 != 0:
+        img_arr = img_arr[:-1, :, :]
+    if h % 2 != 0:
         img_arr = img_arr[:, :-1, :]
 
     img_arr_l = img_arr[0:, 0 : int(w / 2), :]
