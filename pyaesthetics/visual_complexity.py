@@ -23,8 +23,14 @@ def get_visual_complexity(
 
     def get_weight(img: PilImage) -> int:
         img_io = io.BytesIO()
+
+        # Here it is assumed that non-PNG image formats may be input,
+        # but always save in PNG format and calculate their weight (size) to
+        # keep the output consistent.
         img.save(img_io, format="PNG")
+        # Seek to the end fo the file
         img_io.seek(0, 2)
+
         return img_io.tell()
 
     return VisualComplexityOutput(
