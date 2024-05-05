@@ -19,7 +19,7 @@ from PIL.Image import Image as PilImage
 """ Thìs sections handles colorfulness estimation. """
 
 
-def colorfulness_hsv(img: PilImage):
+def colorfulness_hsv(img: PilImage) -> float:
     """This function evaluates the colorfulness of a picture using the formula described in Yendrikhovskij et al., 1998.
     Input image is first converted to the HSV color space, then the S values are selected.
     Ci is evaluated with a sum of the mean S and its std, as in:
@@ -44,7 +44,7 @@ def colorfulness_hsv(img: PilImage):
     return C  # return the colorfulness index
 
 
-def colorfulness_rgb(img: PilImage):
+def colorfulness_rgb(img: PilImage) -> float:
     """This function evaluates the colorfulness of a picture using Metric 3 described in Hasler & Suesstrunk, 2003.
     Ci is evaluated with as:
 

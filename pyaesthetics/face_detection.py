@@ -26,6 +26,7 @@ from PIL.Image import Image as PilImage
 @dataclass
 class GetFacesOutput(object):
     bboxes: np.ndarray
+    num_faces: int
     images: Optional[List[PilImage]] = None
 
 
@@ -43,8 +44,7 @@ def get_faces(img: PilImage, is_plot: bool = False) -> GetFacesOutput:
     frontalface_cascade = cv2.CascadeClassifier(
         cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
     )
-    faces_bboxes = frontalface_cascade.detectMultiScale(img_arr, 1.3, 5)
-    assert isinstance(faces_bboxes, np.ndarray)
+    faces_bboxes: np.ndarray = frontalface_cascade.detectMultiScale(img_arr, 1.3, 5)  # type: ignore
 
     if is_plot:
         images = []
@@ -56,4 +56,6 @@ def get_faces(img: PilImage, is_plot: bool = False) -> GetFacesOutput:
     else:
         images = None
 
-    return GetFacesOutput(bboxes=faces_bboxes, images=images)
+    return GetFacesOutput(
+        bboxes=faces_bboxes, num_faces=len(faces_bboxes), images=images
+    )

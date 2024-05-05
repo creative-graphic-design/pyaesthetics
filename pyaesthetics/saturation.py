@@ -25,7 +25,7 @@ from PIL.Image import Image as PilImage
 """ Thìs sections handles the computation of the saturation of an image. """
 
 
-def get_saturation(img: PilImage):
+def get_saturation(img: PilImage) -> float:
     """This function evaluates the saturationof an image:
 
 

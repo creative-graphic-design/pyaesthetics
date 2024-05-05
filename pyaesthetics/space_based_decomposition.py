@@ -76,8 +76,6 @@ def get_text_image_ratio(areas_output: AreasOutput) -> TextImageRatioOutput:
             text.append(area.area)
         elif area.area_type == "Image":
             image.append(area.area)
-        else:
-            raise ValueError(f"Area type {area.area_type} not recognized")
 
     # ratio is 0.5 if picture and text occupy the same area, more in more text, less if more images.
     ratio = sum(text) / (sum(image) + sum(text))

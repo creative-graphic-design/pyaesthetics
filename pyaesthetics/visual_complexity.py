@@ -1,5 +1,6 @@
 import io
 from dataclasses import dataclass
+from typing import Optional
 
 from PIL.Image import Image as PilImage
 
@@ -9,11 +10,11 @@ from pyaesthetics.utils import QuadTreeDecomposer
 @dataclass
 class VisualComplexityOutput(object):
     num_blocks: int
-    weight: int
+    weight: Optional[int] = None
 
 
 def get_visual_complexity(
-    img: PilImage, min_std: int, min_size: int
+    img: PilImage, min_std: int, min_size: int, is_weight: bool = False
 ) -> VisualComplexityOutput:
     assert img.mode == "RGB", f"Image must be in RGB mode but is in {img.mode}"
 
@@ -35,5 +36,5 @@ def get_visual_complexity(
 
     return VisualComplexityOutput(
         num_blocks=get_num_blocks(img=img, min_std=min_std, min_size=min_size),
-        weight=get_weight(img),
+        weight=get_weight(img) if is_weight else None,
     )
