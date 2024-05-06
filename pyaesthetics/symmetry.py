@@ -59,6 +59,8 @@ def get_symmetry(img: PilImage, min_std: int, min_size: int, is_plot: bool = Fal
     img_arr = np.array(img)
 
     h, w, _ = img_arr.shape
+    assert img.size == (w, h)
+
     if h % 2 != 0:
         img_arr = img_arr[:-1, :]
     if w % 2 != 0:

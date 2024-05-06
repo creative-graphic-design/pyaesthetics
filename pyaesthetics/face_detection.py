@@ -56,6 +56,11 @@ def get_faces(img: PilImage, is_plot: bool = False) -> GetFacesOutput:
     else:
         images = None
 
-    return GetFacesOutput(
-        bboxes=faces_bboxes.tolist(), num_faces=len(faces_bboxes), images=images
+    bboxes = (
+        faces_bboxes.tolist()
+        if isinstance(faces_bboxes, np.ndarray)
+        else list(faces_bboxes)  # empty result
     )
+    num_faces = len(faces_bboxes)
+
+    return GetFacesOutput(bboxes=bboxes, num_faces=num_faces, images=images)

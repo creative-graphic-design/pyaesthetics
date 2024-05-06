@@ -102,6 +102,8 @@ def get_areas(
 
     img_original_arr = img_arr.copy()  # source of the image
     oh, ow, _ = img_original_arr.shape  # shape of the orignal image
+    assert img.size == (ow, oh)
+
     img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)  # conversion to greyscale
 
     if is_resize:
