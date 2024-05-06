@@ -9,7 +9,7 @@ Created on Mon Apr 16 22:40:46 2018
 """
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -25,7 +25,7 @@ from PIL.Image import Image as PilImage
 
 @dataclass
 class GetFacesOutput(object):
-    bboxes: np.ndarray
+    bboxes: List[Tuple[int, int, int, int]]
     num_faces: int
     images: Optional[List[PilImage]] = None
 
@@ -57,5 +57,5 @@ def get_faces(img: PilImage, is_plot: bool = False) -> GetFacesOutput:
         images = None
 
     return GetFacesOutput(
-        bboxes=faces_bboxes, num_faces=len(faces_bboxes), images=images
+        bboxes=faces_bboxes.tolist(), num_faces=len(faces_bboxes), images=images
     )
