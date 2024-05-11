@@ -37,7 +37,7 @@ def contrast_rms(img: PilImage) -> float:
 
     img_arr = np.array(img)
     img_grey = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)
-    img_grey = img_grey / 255.0
+    img_grey = img_grey.astype(float) / 255.0  # Convert img_grey to float type
     contrast = img_grey.std()
 
     # should be the same as:
