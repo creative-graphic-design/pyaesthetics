@@ -61,11 +61,11 @@ def contrast_michelson(img: PilImage):
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
-    Y = cv2.cvtColor(img_arr, cv2.COLOR_RGB2YUV)[:, :, 0]
+    y = cv2.cvtColor(img_arr, cv2.COLOR_RGB2YUV)[:, :, 0]
 
     # compute min and max of Y
-    ymin = float(np.min(Y))
-    ymax = float(np.max(Y))
+    ymin = float(np.min(y))
+    ymax = float(np.max(y))
     # compute contrast
     contrast = (ymax - ymin) / (ymax + ymin)
 
