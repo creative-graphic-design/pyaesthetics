@@ -8,14 +8,13 @@ Created on Mon Apr 16 22:40:46 2018
 @author: Giulio Gabrieli, Shunsuke Kitada
 """
 
-from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
 from PIL import ImageDraw
 from PIL.Image import Image as PilImage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 ###############################################################################
 #                                                                             #
@@ -25,6 +24,8 @@ from pydantic import BaseModel
 
 
 class GetFacesOutput(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     bboxes: List[Tuple[int, int, int, int]]
     num_faces: int
     images: Optional[List[PilImage]] = None

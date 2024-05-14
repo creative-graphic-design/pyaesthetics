@@ -15,7 +15,7 @@ from typing import Optional
 import numpy as np
 from PIL import Image
 from PIL.Image import Image as PilImage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from pyaesthetics.utils import QuadTreeDecomposer
 
@@ -28,6 +28,8 @@ from pyaesthetics.utils import QuadTreeDecomposer
 
 
 class SymmetryImage(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     left: PilImage
     right: PilImage
 

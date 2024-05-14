@@ -18,7 +18,7 @@ import numpy as np
 from imutils import contours, perspective
 from PIL import Image
 from PIL.Image import Image as PilImage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from pyaesthetics.utils import detect_text
 
@@ -48,6 +48,8 @@ class AreaOutput(BaseModel):
 
 
 class AreasOutput(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     areas: List[AreaOutput]
     image: Optional[PilImage] = None
 
