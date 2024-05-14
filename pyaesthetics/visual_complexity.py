@@ -1,14 +1,13 @@
 import io
-from dataclasses import dataclass
 from typing import Optional
 
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 from pyaesthetics.utils import QuadTreeDecomposer
 
 
-@dataclass
-class VisualComplexityOutput(object):
+class VisualComplexityOutput(BaseModel):
     num_blocks: int
     weight: Optional[int] = None
 

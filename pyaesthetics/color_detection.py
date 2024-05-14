@@ -8,12 +8,12 @@ It uses the 16 basic colors defined in the W3C specifications.
 """
 
 import io
-from dataclasses import dataclass
 from typing import Dict, Final, List, Literal, Optional, Tuple
 
 import numpy as np
 from PIL import Image
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 ###############################################################################
 #                                                                             #
@@ -187,8 +187,7 @@ COLORS: Final[Dict[int, Dict[str, Tuple[int, int, int]]]] = {
 }
 
 
-@dataclass
-class ColorDetectionOutput(object):
+class ColorDetectionOutput(BaseModel):
     color_scheme: Dict[str, float]
     image: Optional[PilImage] = None
 

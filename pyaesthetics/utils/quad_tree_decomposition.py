@@ -5,10 +5,10 @@ import cv2
 import numpy as np
 from PIL import ImageDraw
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 
-@dataclass
-class DecomposeOutput(object):
+class DecomposeOutput(BaseModel):
     x: int
     y: int
     w: int

@@ -17,12 +17,17 @@ from PIL.Image import Image as PilImage
 from pydantic import BaseModel
 
 from pyaesthetics.brightness import (
+    BrightnessOutput,
     get_relative_luminance_bt601,
     get_relative_luminance_bt709,
 )
 from pyaesthetics.color_detection import ColorDetectionOutput, get_colors_w3c
-from pyaesthetics.colorfulness import get_colorfulness_hsv, get_colorfulness_rgb
-from pyaesthetics.contrast import contrast_michelson, contrast_rms
+from pyaesthetics.colorfulness import (
+    ColorfulnessOutput,
+    get_colorfulness_hsv,
+    get_colorfulness_rgb,
+)
+from pyaesthetics.contrast import ContrastOutput, contrast_michelson, contrast_rms
 from pyaesthetics.face_detection import GetFacesOutput, get_faces
 from pyaesthetics.saturation import get_saturation
 from pyaesthetics.space_based_decomposition import (
@@ -42,23 +47,12 @@ from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_co
 AnalyzeMethod = Literal["fast", "complete"]
 
 
-class Colorfulness(BaseModel):
-    rgb: float
-    hsv: Optional[float] = None
-
-
-class Contrast(BaseModel):
-    rms: float
-    michelson: Optional[float] = None
-
-
-@dataclass
-class ImageAnalysisOutput(object):
-    brightness: Brightness
+class ImageAnalysisOutput(BaseModel):
+    brightness: BrightnessOutput
     visual_complexity: VisualComplexityOutput
     symmetry: SymmetryOutput
-    colorfulness: Colorfulness
-    contrast: Contrast
+    colorfulness: ColorfulnessOutput
+    contrast: ContrastOutput
     saturation: float
 
     faces: Optional[GetFacesOutput] = None
@@ -71,7 +65,7 @@ def analyze_image_fast(
     min_std: int,
     min_size: int,
 ) -> ImageAnalysisOutput:
-    brightness = Brightness(
+    brightness = BrightnessOutput(
         bt709=get_relative_luminance_bt709(img),
     )
     visual_complexity = get_visual_complexity(
@@ -85,10 +79,10 @@ def analyze_image_fast(
         min_std=min_std,
         min_size=min_size,
     )
-    colorfulness = Colorfulness(
+    colorfulness = ColorfulnessOutput(
         rgb=get_colorfulness_rgb(img),
     )
-    contrast = Contrast(
+    contrast = ContrastOutput(
         rms=contrast_rms(img),
     )
     saturation = get_saturation(img)
@@ -110,58 +104,7 @@ def analyze_image_complete(
     is_resize: bool,
     new_size: Tuple[int, int],
 ) -> ImageAnalysisOutput:
-    # with ProcessPoolExecutor(max_workers=8) as executor:
-    #     bt709 = executor.submit(relative_luminance_bt709, img)
-    #     bt601 = executor.submit(relative_luminance_bt601, img)
-
-    #     visual_complexity = executor.submit(
-    #         get_visual_complexity,
-    #         img=img,
-    #         min_std=min_std,
-    #         min_size=min_size,
-    #         is_weight=True,
-    #     )
-
-    #     symmetry = executor.submit(
-    #         get_symmetry,
-    #         img=img,
-    #         min_std=min_std,
-    #         min_size=min_size,
-    #     )
-
-    #     rgb = executor.submit(colorfulness_rgb, img)
-    #     hsv = executor.submit(colorfulness_hsv, img)
-
-    #     rms = executor.submit(contrast_rms, img)
-    #     michelson = executor.submit(contrast_michelson, img)
-
-    #     saturation = executor.submit(get_saturation, img)
-
-    #     faces = executor.submit(get_faces, img=img)
-    #     colors = executor.submit(get_colors_w3c, img=img, n_colors=140)
-
-    #     areas = executor.submit(
-    #         get_areas, img, is_areatype=True, is_resize=is_resize, new_size=new_size
-    #     )
-    #     text_image_ratio = executor.submit(get_text_image_ratio, areas.result())
-
-    # brightness = Brightness(bt709=bt709.result(), bt601=bt601.result())
-    # colorfulness = Colorfulness(rgb=rgb.result(), hsv=hsv.result())
-    # contrast = Contrast(rms=rms.result(), michelson=michelson.result())
-
-    # return ImageAnalysisOutput(
-    #     brightness=brightness,
-    #     visual_complexity=visual_complexity.result(),
-    #     symmetry=symmetry.result(),
-    #     colorfulness=colorfulness,
-    #     contrast=contrast,
-    #     saturation=saturation.result(),
-    #     faces=faces.result(),
-    #     colors=colors.result(),
-    #     text_image_ratio=text_image_ratio.result(),
-    # )
-
-    brightness = Brightness(
+    brightness = BrightnessOutput(
         bt709=get_relative_luminance_bt709(img),
         bt601=get_relative_luminance_bt601(img),
     )
@@ -176,11 +119,11 @@ def analyze_image_complete(
         min_std=min_std,
         min_size=min_size,
     )
-    colorfulness = Colorfulness(
+    colorfulness = ColorfulnessOutput(
         rgb=get_colorfulness_rgb(img),
         hsv=get_colorfulness_hsv(img),
     )
-    contrast = Contrast(
+    contrast = ContrastOutput(
         rms=contrast_rms(img),
         michelson=contrast_michelson(img),
     )

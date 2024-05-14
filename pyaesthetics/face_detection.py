@@ -15,6 +15,7 @@ import cv2
 import numpy as np
 from PIL import ImageDraw
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 ###############################################################################
 #                                                                             #
@@ -23,8 +24,7 @@ from PIL.Image import Image as PilImage
 ###############################################################################
 
 
-@dataclass
-class GetFacesOutput(object):
+class GetFacesOutput(BaseModel):
     bboxes: List[Tuple[int, int, int, int]]
     num_faces: int
     images: Optional[List[PilImage]] = None

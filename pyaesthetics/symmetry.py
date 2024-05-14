@@ -10,12 +10,12 @@ Created on Mon Apr 16 11:49:45 2018
 """
 
 import os
-from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
 from PIL import Image
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 from pyaesthetics.utils import QuadTreeDecomposer
 
@@ -27,8 +27,7 @@ from pyaesthetics.utils import QuadTreeDecomposer
 """ Thìs sections handles Quadratic Tree Decomposition. """
 
 
-@dataclass
-class SymmetryImage(object):
+class SymmetryImage(BaseModel):
     left: PilImage
     right: PilImage
 
@@ -37,8 +36,7 @@ class SymmetryImage(object):
         self.right.save(os.path.join(save_dir_path, "right.png"))
 
 
-@dataclass
-class SymmetryOutput(object):
+class SymmetryOutput(BaseModel):
     degree: float
     images: Optional[SymmetryImage] = None
 

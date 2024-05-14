@@ -29,7 +29,7 @@ from pyaesthetics.utils import s_rgb_to_rgb
 """ Thìs sections handles brigthness estimation. """
 
 
-class Brightness(BaseModel):
+class BrightnessOutput(BaseModel):
     bt709: float
     bt601: Optional[float] = None
 

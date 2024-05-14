@@ -10,7 +10,6 @@ Created on Sat Apr 21 09:40:45 2018
 @author: giulio
 """
 
-from dataclasses import dataclass
 from typing import List, Literal, Optional
 
 import cv2
@@ -18,6 +17,7 @@ import numpy as np
 from imutils import contours, perspective
 from PIL import Image
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 from pyaesthetics.utils import detect_text
 
@@ -31,29 +31,25 @@ from pyaesthetics.utils import detect_text
 AreaType = Literal["Text", "Image"]
 
 
-@dataclass
-class AreaCoordinates(object):
+class AreaCoordinates(BaseModel):
     xmin: int
     xmax: int
     ymin: int
     ymax: int
 
 
-@dataclass
-class AreaOutput(object):
+class AreaOutput(BaseModel):
     area: int
     coordinates: Optional[AreaCoordinates] = None
     area_type: Optional[AreaType] = None
 
 
-@dataclass
-class AreasOutput(object):
+class AreasOutput(BaseModel):
     areas: List[AreaOutput]
     image: Optional[PilImage] = None
 
 
-@dataclass
-class TextImageRatioOutput(object):
+class TextImageRatioOutput(BaseModel):
     text_image_ratio: float
     text_area: int
     image_area: int

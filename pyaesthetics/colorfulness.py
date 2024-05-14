@@ -4,11 +4,12 @@ This module contains function to evaluate the colorfulness of an image in both t
 @author: Giulio Gabrieli
 """
 
-from typing import Union
+from typing import Optional
 
-import cv2  # for image manipulation
-import numpy as np  # numerical computation
+import cv2
+import numpy as np
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 ###############################################################################
 #                                                                             #
@@ -17,6 +18,11 @@ from PIL.Image import Image as PilImage
 ###############################################################################
 
 """ Thìs sections handles colorfulness estimation. """
+
+
+class ColorfulnessOutput(BaseModel):
+    rgb: float
+    hsv: Optional[float] = None
 
 
 def get_colorfulness_hsv(img: PilImage) -> float:

@@ -11,9 +11,12 @@ RMS contrast or Michelson contrast.
 #                                                                             #
 ###############################################################################
 
-import cv2  # for image manipulation
-import numpy as np  # numerical computation
+from typing import Optional
+
+import cv2
+import numpy as np
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 ###############################################################################
 #                                                                             #
@@ -22,6 +25,11 @@ from PIL.Image import Image as PilImage
 ###############################################################################
 
 """ Thìs sections handles brigthness estimation. """
+
+
+class ContrastOutput(BaseModel):
+    rms: float
+    michelson: Optional[float] = None
 
 
 def contrast_rms(img: PilImage) -> float:
