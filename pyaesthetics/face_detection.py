@@ -5,7 +5,7 @@ This is an entrypoint for automatic analysis of a website.
 
 Created on Mon Apr 16 22:40:46 2018
 
-@author: giulio
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 from dataclasses import dataclass

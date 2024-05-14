@@ -3,7 +3,7 @@
 """
 This module contains function to evaluate the saturation of an image.
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 ###############################################################################

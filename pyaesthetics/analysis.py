@@ -1,7 +1,7 @@
 """
 This is an entrypoint for the automatic analysis of images using pyaeshtetics.
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 ###############################################################################

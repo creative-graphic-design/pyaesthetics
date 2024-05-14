@@ -1,7 +1,7 @@
 """
 This module contains function to evaluate the colorfulness of an image in both the HSV and RGB color spaces.
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 from typing import Optional

@@ -3,7 +3,7 @@ This module contains function to evaluate the brightness of an image.
 It includes a converter for sRGB to RGB, evaluation of relative luminance according to
 BT.709 and BT.601
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 ###############################################################################

@@ -6,7 +6,7 @@ This module contains functions to compute the degree of symmetry of an image.
 
 Created on Mon Apr 16 11:49:45 2018
 
-@author: giulio
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 import os

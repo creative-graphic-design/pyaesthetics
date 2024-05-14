@@ -4,7 +4,7 @@
 This module contains function to evaluate the presence of different colors of an image.
 It uses the 16 basic colors defined in the W3C specifications.
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 import io

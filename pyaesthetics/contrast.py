@@ -2,7 +2,7 @@
 This module contains function to evaluate the contrast of an image using either
 RMS contrast or Michelson contrast.
 
-@author: Giulio Gabrieli
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 ###############################################################################

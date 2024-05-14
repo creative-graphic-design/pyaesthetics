@@ -7,7 +7,7 @@ This module contains functions to compute the number of indipendent areas in an 
 
 Created on Sat Apr 21 09:40:45 2018
 
-@author: giulio
+@author: Giulio Gabrieli, Shunsuke Kitada
 """
 
 from typing import List, Literal, Optional
