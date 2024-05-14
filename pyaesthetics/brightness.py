@@ -12,8 +12,11 @@ BT.709 and BT.601
 #                                                                             #
 ###############################################################################
 
+from typing import Optional
+
 import numpy as np
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 from pyaesthetics.utils import s_rgb_to_rgb
 
@@ -24,6 +27,11 @@ from pyaesthetics.utils import s_rgb_to_rgb
 ###############################################################################
 
 """ Thìs sections handles brigthness estimation. """
+
+
+class Brightness(BaseModel):
+    bt709: float
+    bt601: Optional[float] = None
 
 
 def get_relative_luminance_bt709(img: PilImage) -> float:

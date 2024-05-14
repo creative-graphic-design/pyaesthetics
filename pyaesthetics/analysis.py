@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Literal, Optional, Tuple, get_args
 
 from PIL.Image import Image as PilImage
+from pydantic import BaseModel
 
 from pyaesthetics.brightness import (
     get_relative_luminance_bt601,
@@ -41,20 +42,12 @@ from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_co
 AnalyzeMethod = Literal["fast", "complete"]
 
 
-@dataclass
-class Brightness(object):
-    bt709: float
-    bt601: Optional[float] = None
-
-
-@dataclass
-class Colorfulness(object):
+class Colorfulness(BaseModel):
     rgb: float
     hsv: Optional[float] = None
 
 
-@dataclass
-class Contrast(object):
+class Contrast(BaseModel):
     rms: float
     michelson: Optional[float] = None
 
