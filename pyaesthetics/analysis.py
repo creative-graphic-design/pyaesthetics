@@ -102,7 +102,8 @@ def analyze_image_complete(
     min_std: int,
     min_size: int,
     is_resize: bool,
-    new_size: Tuple[int, int],
+    resized_w: int,
+    resized_h: int,
 ) -> ImageAnalysisOutput:
     brightness = BrightnessOutput(
         bt709=get_relative_luminance_bt709(img),
@@ -135,7 +136,8 @@ def analyze_image_complete(
     areas = get_areas(
         img,
         is_resize=is_resize,
-        new_size=new_size,
+        resized_w=resized_w,
+        resized_h=resized_h,
         is_areatype=True,
     )
     text_image_ratio = get_text_image_ratio(areas)
@@ -157,7 +159,8 @@ def analyze_image(
     img: PilImage,
     method: AnalyzeMethod = "fast",
     is_resize: bool = True,
-    new_size: Tuple[int, int] = (600, 400),
+    resized_w: int = 600,
+    resized_h: int = 400,
     min_std: int = 10,
     min_size: int = 20,
 ):
@@ -191,7 +194,8 @@ def analyze_image(
             min_std=min_std,
             min_size=min_size,
             is_resize=is_resize,
-            new_size=new_size,
+            resized_w=resized_w,
+            resized_h=resized_h,
         )
     else:
         raise ValueError(
