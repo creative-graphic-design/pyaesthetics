@@ -12,7 +12,7 @@ Created on Sat Apr 21 09:40:45 2018
 
 import logging
 from dataclasses import dataclass
-from typing import List, Literal, Optional, Tuple
+from typing import List, Literal, Optional, Sequence
 
 import cv2
 import numpy as np
@@ -64,7 +64,7 @@ class TextImageRatioOutput(object):
 
 
 def _get_bboxes_from_contours(
-    cnts: List[np.ndarray],
+    cnts: Sequence[np.ndarray],
     is_resize: bool,
     original_w: int,
     original_h: int,
