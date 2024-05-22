@@ -1,3 +1,6 @@
+PORT=7860
+WORKERS=1
+
 #
 # Installation
 #
@@ -17,6 +20,10 @@ setup:
 .PHONY: install
 install:
 	poetry install --extras tesseract --extras visualization
+
+.PHONY: install-api
+install-api:
+	poetry install --extras api --extras tesseract --extras visualization
 
 #
 # linter/formatter/typecheck/testing
@@ -41,3 +48,11 @@ typecheck: install
 .PHONY: test
 test:
 	poetry run pytest
+
+#
+# Development
+#
+
+.PHONY: run
+run:
+	uvicorn pyaesthetics.api.run:app --port $(PORT) --workers $(WORKERS)
