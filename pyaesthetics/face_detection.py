@@ -10,10 +10,10 @@ Created on Mon Apr 16 22:40:46 2018
 
 from typing import List, Optional, Tuple
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
-from pyaesthetics.utils import Cv2CancadeClassifier, FaceDetector, encode_image
-from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
+from pyaesthetics.utils import Cv2CancadeClassifier, FaceDetector, decode_image, encode_image
+from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -25,15 +25,14 @@ from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
 class GetFacesOutput(BaseModel):
     bboxes: List[Tuple[int, int, int, int]]
     num_faces: int
-    images: Optional[List[EncodedImageStr]] = None
+    encoded_images: Optional[List[Base64EncodedImage]] = None
 
-    @field_validator("images")
-    @classmethod
-    def encode_images(cls, images: Optional[List[PilImage]]) -> Optional[List[EncodedImageStr]]:
+    @property
+    def images(self) -> Optional[List[PilImage]]:
         return (
-            [encode_image(image) if isinstance(image, PilImage) else image for image in images]
-            if images is not None
-            else images
+            [decode_image(encoded_image) for encoded_image in self.encoded_images]
+            if self.encoded_images is not None
+            else None
         )
 
 
@@ -56,4 +55,5 @@ def get_faces(
     images = face_detector.plot_bboxes(img, bboxes) if is_plot else None
     num_faces = len(bboxes)
 
-    return GetFacesOutput(bboxes=bboxes, num_faces=num_faces, images=images)
+    encoded_images = [encode_image(image) for image in images] if images is not None else None
+    return GetFacesOutput(bboxes=bboxes, num_faces=num_faces, encoded_images=encoded_images)

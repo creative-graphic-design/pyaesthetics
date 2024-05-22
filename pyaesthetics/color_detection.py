@@ -12,9 +12,10 @@ from typing import Dict, Final, List, Literal, Optional, Tuple
 
 import numpy as np
 from PIL import Image
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from pyaesthetics.utils.typehint import PilImage
+from pyaesthetics.utils import decode_image
+from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -190,7 +191,11 @@ COLORS: Final[Dict[int, Dict[str, Tuple[int, int, int]]]] = {
 
 class ColorDetectionOutput(BaseModel):
     color_scheme: Dict[str, float]
-    image: Optional[PilImage] = None
+    encoded_image: Optional[Base64EncodedImage] = None
+
+    @property
+    def image(self) -> Optional[PilImage]:
+        return decode_image(self.encoded_image) if self.encoded_image else None
 
 
 def get_color_names(ncolors: NColorType) -> Dict[str, Tuple[int, int, int]]:
@@ -295,5 +300,5 @@ def get_colors_w3c(
 
     return ColorDetectionOutput(
         color_scheme=colorscheme,
-        image=image,
+        encoded_image=image,
     )

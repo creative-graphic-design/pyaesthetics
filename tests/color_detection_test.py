@@ -195,7 +195,7 @@ class TestColorDetection(PyaestheticsTestCase):
         actual_results = output.color_scheme
         assert actual_results == expected_results
 
-        assert output.image is None
+        assert output.encoded_image is None
 
     def test_exception(self, image, invalid_n_colors: int = 1):
         with pytest.raises(ValueError):
@@ -206,6 +206,6 @@ class TestColorDetection(PyaestheticsTestCase):
         output = get_colors_w3c(image, n_colors=16, is_plot=is_plot)
 
         if is_plot:
-            assert output.image is not None and isinstance(output.image, PilImage)
+            assert output.encoded_image is not None and isinstance(output.encoded_image, PilImage)
         else:
-            assert output.image is None
+            assert output.encoded_image is None

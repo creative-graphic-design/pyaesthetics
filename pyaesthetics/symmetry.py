@@ -10,14 +10,14 @@ Created on Mon Apr 16 11:49:45 2018
 """
 
 import os
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 from PIL import Image
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 from pyaesthetics.utils import QuadTreeDecomposer, decode_image, encode_image
-from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
+from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -28,13 +28,8 @@ from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
 
 
 class SymmetryImage(BaseModel):
-    left: EncodedImageStr
-    right: EncodedImageStr
-
-    @field_validator("left", "right")
-    @classmethod
-    def encode_image(cls, image: Union[PilImage, EncodedImageStr]) -> EncodedImageStr:
-        return encode_image(image) if isinstance(image, PilImage) else image
+    left: Base64EncodedImage
+    right: Base64EncodedImage
 
     def save_images(self, save_dir_path: str = "."):
         image_l = decode_image(self.left)
@@ -92,6 +87,10 @@ def get_symmetry(img: PilImage, min_std: int, min_size: int, is_plot: bool = Fal
                 counter += 1
     degree = counter / tot * 200
 
-    images = SymmetryImage(left=tree_l.get_plot(), right=tree_r.get_plot()) if is_plot else None
+    images = (
+        SymmetryImage(left=encode_image(tree_l.get_plot()), right=encode_image(tree_r.get_plot()))
+        if is_plot
+        else None
+    )
 
     return SymmetryOutput(degree=degree, images=images)

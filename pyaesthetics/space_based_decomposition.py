@@ -11,16 +11,16 @@ Created on Sat Apr 21 09:40:45 2018
 """
 
 import logging
-from typing import List, Literal, Optional, Sequence, Union
+from typing import List, Literal, Optional, Sequence
 
 import cv2
 import numpy as np
 from imutils import contours, perspective
 from PIL import Image
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 from pyaesthetics.utils import decode_image, detect_text, encode_image
-from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
+from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -49,18 +49,11 @@ class AreaOutput(BaseModel):
 
 class AreasOutput(BaseModel):
     areas: List[AreaOutput]
-    image: Optional[EncodedImageStr] = None
+    encoded_image: Optional[Base64EncodedImage] = None
 
-    @field_validator("image")
-    @classmethod
-    def encode_image(
-        cls, image: Optional[Union[PilImage, EncodedImageStr]]
-    ) -> Optional[EncodedImageStr]:
-        return encode_image(image) if isinstance(image, PilImage) else image
-
-    def decode_image(self) -> PilImage:
-        assert self.image is not None
-        return decode_image(self.image)
+    @property
+    def images(self) -> Optional[PilImage]:
+        return decode_image(self.encoded_image) if self.encoded_image is not None else None
 
 
 class TextImageRatioOutput(BaseModel):
@@ -209,7 +202,9 @@ def get_areas(
             )
         )
 
-    return AreasOutput(areas=areas, image=plot_img)
+    return AreasOutput(
+        areas=areas, encoded_image=encode_image(plot_img) if plot_img is not None else None
+    )
 
 
 def get_text_image_ratio(areas_output: AreasOutput) -> TextImageRatioOutput:
