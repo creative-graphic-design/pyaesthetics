@@ -235,7 +235,7 @@ def get_colors_w3c(
     :type plotncolors: int
     :return: percentage distribution of colors according to the W3C sixteens basic colors
     :rtype: list of shape ncolors x 2, where x[0] is the color name and x[1] the percentage of pixels most similar to that color in the image
-    """
+    """  # NOQA: E501
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
@@ -257,9 +257,7 @@ def get_colors_w3c(
         color_names = np.array(color_names)[mask].tolist()
 
     unique_colors, counts = np.unique(color_names, return_counts=True)
-    colorscheme = {
-        c: count / len(color_names) * 100 for c, count in zip(unique_colors, counts)
-    }
+    colorscheme = {c: count / len(color_names) * 100 for c, count in zip(unique_colors, counts)}
 
     missingcolors = list(set(colors) - set(unique_colors))
     for color in missingcolors:
@@ -277,9 +275,7 @@ def get_colors_w3c(
         fig.suptitle(f"Top {plotncolors} colors ({n_colors} colors mode)")
 
         for i in range(0, plotncolors):
-            ax.add_patch(
-                patches.Rectangle((i, 0), 1, 1, facecolor=sorted_data[i][0].lower())
-            )
+            ax.add_patch(patches.Rectangle((i, 0), 1, 1, facecolor=sorted_data[i][0].lower()))
         ax.set_xlim(0, plotncolors)
 
         buf = io.BytesIO()
