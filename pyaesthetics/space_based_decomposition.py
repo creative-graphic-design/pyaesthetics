@@ -11,16 +11,16 @@ Created on Sat Apr 21 09:40:45 2018
 """
 
 import logging
-from typing import List, Literal, Optional, Sequence
+from typing import List, Literal, Optional, Sequence, Union
 
 import cv2
 import numpy as np
 from imutils import contours, perspective
 from PIL import Image
-from PIL.Image import Image as PilImage
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, field_validator
 
-from pyaesthetics.utils import detect_text
+from pyaesthetics.utils import decode_image, detect_text, encode_image
+from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -48,10 +48,19 @@ class AreaOutput(BaseModel):
 
 
 class AreasOutput(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
     areas: List[AreaOutput]
-    image: Optional[PilImage] = None
+    image: Optional[EncodedImageStr] = None
+
+    @field_validator("image")
+    @classmethod
+    def encode_image(
+        cls, image: Optional[Union[PilImage, EncodedImageStr]]
+    ) -> Optional[EncodedImageStr]:
+        return encode_image(image) if isinstance(image, PilImage) else image
+
+    def decode_image(self) -> PilImage:
+        assert self.image is not None
+        return decode_image(self.image)
 
 
 class TextImageRatioOutput(BaseModel):

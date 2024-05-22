@@ -10,10 +10,8 @@ This is an entrypoint for the automatic analysis of images using pyaeshtetics.
 #                                                                             #
 ###############################################################################
 
-from dataclasses import dataclass
 from typing import Literal, Optional, get_args
 
-from PIL.Image import Image as PilImage
 from pydantic import BaseModel
 
 from pyaesthetics.brightness import (
@@ -36,6 +34,7 @@ from pyaesthetics.space_based_decomposition import (
     get_text_image_ratio,
 )
 from pyaesthetics.symmetry import SymmetryOutput, get_symmetry
+from pyaesthetics.utils.typehint import PilImage
 from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_complexity
 
 ###############################################################################

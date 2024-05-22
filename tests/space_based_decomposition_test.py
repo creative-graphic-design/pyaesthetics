@@ -1,6 +1,5 @@
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.space_based_decomposition import (
     AreaCoordinates,
@@ -11,6 +10,7 @@ from pyaesthetics.space_based_decomposition import (
     get_text_image_ratio,
 )
 from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestSpaceBasedDecomposition(PyaestheticsTestCase):

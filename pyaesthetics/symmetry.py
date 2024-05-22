@@ -10,14 +10,14 @@ Created on Mon Apr 16 11:49:45 2018
 """
 
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from PIL import Image
-from PIL.Image import Image as PilImage
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, field_validator
 
-from pyaesthetics.utils import QuadTreeDecomposer
+from pyaesthetics.utils import QuadTreeDecomposer, decode_image, encode_image
+from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -28,14 +28,20 @@ from pyaesthetics.utils import QuadTreeDecomposer
 
 
 class SymmetryImage(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    left: EncodedImageStr
+    right: EncodedImageStr
 
-    left: PilImage
-    right: PilImage
+    @field_validator("left", "right")
+    @classmethod
+    def encode_image(cls, image: Union[PilImage, EncodedImageStr]) -> EncodedImageStr:
+        return encode_image(image) if isinstance(image, PilImage) else image
 
     def save_images(self, save_dir_path: str = "."):
-        self.left.save(os.path.join(save_dir_path, "left.png"))
-        self.right.save(os.path.join(save_dir_path, "right.png"))
+        image_l = decode_image(self.left)
+        image_r = decode_image(self.right)
+
+        image_l.save(os.path.join(save_dir_path, "left.png"))
+        image_r.save(os.path.join(save_dir_path, "right.png"))
 
 
 class SymmetryOutput(BaseModel):

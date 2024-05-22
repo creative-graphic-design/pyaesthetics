@@ -10,10 +10,10 @@ Created on Mon Apr 16 22:40:46 2018
 
 from typing import List, Optional, Tuple
 
-from PIL.Image import Image as PilImage
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, field_validator
 
-from pyaesthetics.utils.face import Cv2CancadeClassifier, FaceDetector
+from pyaesthetics.utils import Cv2CancadeClassifier, FaceDetector, encode_image
+from pyaesthetics.utils.typehint import EncodedImageStr, PilImage
 
 ###############################################################################
 #                                                                             #
@@ -23,11 +23,18 @@ from pyaesthetics.utils.face import Cv2CancadeClassifier, FaceDetector
 
 
 class GetFacesOutput(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
     bboxes: List[Tuple[int, int, int, int]]
     num_faces: int
-    images: Optional[List[PilImage]] = None
+    images: Optional[List[EncodedImageStr]] = None
+
+    @field_validator("images")
+    @classmethod
+    def encode_images(cls, images: Optional[List[PilImage]]) -> Optional[List[EncodedImageStr]]:
+        return (
+            [encode_image(image) if isinstance(image, PilImage) else image for image in images]
+            if images is not None
+            else images
+        )
 
 
 def get_faces(

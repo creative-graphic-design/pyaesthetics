@@ -1,7 +1,7 @@
 import abc
 from typing import Optional
 
-from PIL.Image import Image as PilImage
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TextDetector(object, metaclass=abc.ABCMeta):

@@ -14,7 +14,8 @@ This module contains function to evaluate the saturation of an image.
 
 import cv2  # for image manipulation
 import numpy as np
-from PIL.Image import Image as PilImage
+
+from pyaesthetics.utils.typehint import PilImage
 
 ###############################################################################
 #                                                                             #

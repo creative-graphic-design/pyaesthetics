@@ -8,8 +8,10 @@ from typing import Optional
 
 import cv2
 import numpy as np
-from PIL.Image import Image as PilImage
 from pydantic import BaseModel
+
+from pyaesthetics.utils import s_rgb_to_rgb
+from pyaesthetics.utils.typehint import PilImage
 
 ###############################################################################
 #                                                                             #
@@ -68,6 +70,7 @@ def get_colorfulness_rgb(img: PilImage) -> float:
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
+    img_arr = s_rgb_to_rgb(img_arr)
 
     # First we initialize 3 arrays
     rs, gs, bs = [], [], []

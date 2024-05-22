@@ -12,8 +12,9 @@ from typing import Dict, Final, List, Literal, Optional, Tuple
 
 import numpy as np
 from PIL import Image
-from PIL.Image import Image as PilImage
 from pydantic import BaseModel, ConfigDict
+
+from pyaesthetics.utils.typehint import PilImage
 
 ###############################################################################
 #                                                                             #
@@ -188,8 +189,6 @@ COLORS: Final[Dict[int, Dict[str, Tuple[int, int, int]]]] = {
 
 
 class ColorDetectionOutput(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
     color_scheme: Dict[str, float]
     image: Optional[PilImage] = None
 

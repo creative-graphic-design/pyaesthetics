@@ -4,7 +4,8 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 from PIL import ImageDraw
-from PIL.Image import Image as PilImage
+
+from pyaesthetics.utils.typehint import PilImage
 
 
 class FaceDetector(object, metaclass=abc.ABCMeta):

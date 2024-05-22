@@ -1,10 +1,10 @@
 import io
 from typing import Optional
 
-from PIL.Image import Image as PilImage
 from pydantic import BaseModel
 
 from pyaesthetics.utils import QuadTreeDecomposer
+from pyaesthetics.utils.typehint import PilImage
 
 
 class VisualComplexityOutput(BaseModel):

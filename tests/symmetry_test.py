@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.symmetry import get_symmetry
 from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestSymmetry(PyaestheticsTestCase):

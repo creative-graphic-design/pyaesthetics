@@ -4,8 +4,9 @@ from typing import List, Optional, Tuple
 import cv2
 import numpy as np
 from PIL import ImageDraw
-from PIL.Image import Image as PilImage
 from pydantic import BaseModel
+
+from pyaesthetics.utils.typehint import PilImage
 
 
 class DecomposeOutput(BaseModel):
