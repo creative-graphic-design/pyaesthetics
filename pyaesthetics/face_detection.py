@@ -11,9 +11,6 @@ Created on Mon Apr 16 22:40:46 2018
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-import cv2
-import numpy as np
-from PIL import ImageDraw
 from PIL.Image import Image as PilImage
 
 from pyaesthetics.utils.face import Cv2CancadeClassifier, FaceDetector

@@ -11,7 +11,7 @@ This is an entrypoint for the automatic analysis of images using pyaeshtetics.
 ###############################################################################
 
 from dataclasses import dataclass
-from typing import Literal, Optional, Tuple, get_args
+from typing import Literal, Optional, get_args
 
 from PIL.Image import Image as PilImage
 
@@ -194,7 +194,7 @@ def analyze_image(
     :return: number of character in the text
     :rtype: dict
 
-    """
+    """  # NOQA: E501
     if method == "fast":
         return analyze_image_fast(
             img=img,
@@ -211,6 +211,4 @@ def analyze_image(
             resized_h=resized_h,
         )
     else:
-        raise ValueError(
-            f"Invalid method {method}. Valid methods are {get_args(AnalyzeMethod)}"
-        )
+        raise ValueError(f"Invalid method {method}. Valid methods are {get_args(AnalyzeMethod)}")

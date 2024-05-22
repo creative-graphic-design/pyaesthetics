@@ -54,7 +54,7 @@ def get_symmetry(img: PilImage, min_std: int, min_size: int, is_plot: bool = Fal
     :type minStd: int
     :return: degree of vertical symmetry
     :rtype: float
-    """
+    """  # NOQA: E501
     assert img.mode == "RGB", f"Image must be in RGB mode but is in {img.mode}"
     img_arr = np.array(img)
 
@@ -86,10 +86,6 @@ def get_symmetry(img: PilImage, min_std: int, min_size: int, is_plot: bool = Fal
                 counter += 1
     degree = counter / tot * 200
 
-    images = (
-        SymmetryImage(left=tree_l.get_plot(), right=tree_r.get_plot())
-        if is_plot
-        else None
-    )
+    images = SymmetryImage(left=tree_l.get_plot(), right=tree_r.get_plot()) if is_plot else None
 
     return SymmetryOutput(degree=degree, images=images)

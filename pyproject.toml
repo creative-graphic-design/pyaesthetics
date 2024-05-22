@@ -41,6 +41,10 @@ ruff = ">=0.1.5"
 mypy = ">=1.0.0"
 pytest = ">=6.0.0"
 
+[tool.ruff]
+exclude = [".git", '.mypy_cache', '.ruff_cache']
+line-length = 100
+
 [tool.ruff.lint]
 select = [
     "F", # Pyflakes (default)

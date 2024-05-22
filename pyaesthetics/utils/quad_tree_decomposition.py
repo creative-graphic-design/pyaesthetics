@@ -42,7 +42,7 @@ class QuadTreeDecomposer(object):
     During initialization, QuadTree decomposition is done and result are store in self.blocks as a list containing [x, y, w, h , std].
 
     To visualize the results, use get_plot().
-    """
+    """  # NOQA: E501
 
     min_std: int
     min_size: int
@@ -52,9 +52,7 @@ class QuadTreeDecomposer(object):
     _blocks: Optional[List[DecomposeOutput]] = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
-        assert (
-            self.img.mode == "RGB"
-        ), f"Image must be in RGB mode but is in {self.img.mode} mode"
+        assert self.img.mode == "RGB", f"Image must be in RGB mode but is in {self.img.mode} mode"
         img_arr = np.array(self.img)
         self._img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)
 
@@ -92,7 +90,7 @@ class QuadTreeDecomposer(object):
         :type x: int
         :param Y: Y offset of the leaves to analyze
         :type Y: int
-        """
+        """  # NOQA: E501
 
         h, w = img.shape
         std = int(img.std())
