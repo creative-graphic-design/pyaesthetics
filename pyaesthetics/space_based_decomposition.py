@@ -143,9 +143,7 @@ def get_areas(
     img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)  # conversion to greyscale
 
     if is_resize:
-        img_arr = cv2.resize(
-            img_arr, (resized_w, resized_h), interpolation=cv2.INTER_CUBIC
-        )
+        img_arr = cv2.resize(img_arr, (resized_w, resized_h), interpolation=cv2.INTER_CUBIC)
 
     # apply a Gaussina filter
     img_arr = cv2.GaussianBlur(img_arr, ksize=(3, 3), sigmaX=0)
@@ -214,7 +212,7 @@ def get_text_image_ratio(areas_output: AreasOutput) -> TextImageRatioOutput:
     :type areas: dict
     :return: a dict containing the text / (image+text) ratio , total area of text and total area of images and number of images
     :rtype: dict
-    """
+    """  # NOQA: E501
     image, text = [], []
 
     for area in areas_output.areas:

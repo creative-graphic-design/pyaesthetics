@@ -49,9 +49,7 @@ class TestSpaceBasedDecomposition(PyaestheticsTestCase):
                 ),
                 AreaOutput(
                     area=2989,
-                    coordinates=AreaCoordinates(
-                        xmin=961, xmax=1022, ymin=974, ymax=1023
-                    ),
+                    coordinates=AreaCoordinates(xmin=961, xmax=1022, ymin=974, ymax=1023),
                     area_type="Image",
                 ),
             ],

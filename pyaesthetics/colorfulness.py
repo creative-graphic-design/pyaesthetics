@@ -2,9 +2,7 @@
 This module contains function to evaluate the colorfulness of an image in both the HSV and RGB color spaces.
 
 @author: Giulio Gabrieli
-"""
-
-from typing import Union
+"""  # NOQA: E501
 
 import cv2  # for image manipulation
 import numpy as np  # numerical computation
@@ -30,7 +28,7 @@ def get_colorfulness_hsv(img: PilImage) -> float:
     :type img: numpy.ndarray
     :return: colorfulness index
     :rtype: float
-    """
+    """  # NOQA: E501
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
@@ -40,9 +38,7 @@ def get_colorfulness_hsv(img: PilImage) -> float:
     for row in img_arr:  # for each row
         for pixel in row:  # for each pixel
             saturations.append(pixel[1])  # take only the Saturation value
-    colorfulness = np.mean(saturations) + np.std(
-        saturations
-    )  # evaluate the colorfulness
+    colorfulness = np.mean(saturations) + np.std(saturations)  # evaluate the colorfulness
     return colorfulness.item()  # return the colorfulness index
 
 
@@ -60,7 +56,7 @@ def get_colorfulness_rgb(img: PilImage) -> float:
     :type img: numpy.ndarray
     :return: colorfulness index
     :rtype: float
-    """
+    """  # NOQA: E501
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)

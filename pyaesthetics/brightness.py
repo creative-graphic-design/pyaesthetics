@@ -47,9 +47,7 @@ def get_relative_luminance_bt709(img: PilImage) -> float:
     img_arr = np.transpose(img_arr)
 
     brigthness = (
-        np.mean(img_arr[0]) * 0.2126
-        + np.mean(img_arr[1]) * 0.7152
-        + np.mean(img_arr[2]) * 0.0722
+        np.mean(img_arr[0]) * 0.2126 + np.mean(img_arr[1]) * 0.7152 + np.mean(img_arr[2]) * 0.0722
     )
     return brigthness.item()
 
@@ -75,8 +73,6 @@ def get_relative_luminance_bt601(img: PilImage) -> float:
     img_arr = np.transpose(img_arr)
 
     brightness = (
-        np.mean(img_arr[0]) * 0.299
-        + np.mean(img_arr[1]) * 0.587
-        + np.mean(img_arr[2]) * 0.114
+        np.mean(img_arr[0]) * 0.299 + np.mean(img_arr[1]) * 0.587 + np.mean(img_arr[2]) * 0.114
     )
     return brightness.item()
