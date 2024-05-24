@@ -1,19 +1,18 @@
 import io
-from typing import get_args
 
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from pyaesthetics.analysis import AnalyzeMethod, ImageAnalysisOutput, analyze_image
+from pyaesthetics.colorfulness import get_colorfulness_hsv, get_colorfulness_rgb
 from pyaesthetics.utils import PyaestheticsTestCase
 from pyaesthetics.utils.typehint import PilImage
 
 
-class TestAnalysisEndpoint(PyaestheticsTestCase):
+class TestColorfulnessEndpoint(PyaestheticsTestCase):
     @pytest.fixture
     def image_filename(self) -> str:
-        return "sample2.jpg"
+        return "sample.jpg"
 
     @pytest.fixture
     def image(self, image_filename: str) -> PilImage:
@@ -26,25 +25,36 @@ class TestAnalysisEndpoint(PyaestheticsTestCase):
         image_io.seek(0)
         return image_io
 
-    @pytest.mark.parametrize(
-        argnames="method",
-        argvalues=get_args(AnalyzeMethod),
-    )
-    def test_analyze_image_endpoint(
+    def test_hsv_endpoint(
         self,
         client: TestClient,
-        method: AnalyzeMethod,
         image: PilImage,
         image_io: io.BytesIO,
         image_filename: str,
     ):
         res = client.post(
-            "/analysis/image",
+            "/colorfulness/hsv",
             files={"image_file": (image_filename, image_io)},
-            params={"method": method},
         )
         res.raise_for_status()
 
-        actual = ImageAnalysisOutput(**res.json())
-        expected = analyze_image(image, method=method)
+        actual = res.json()
+        expected = get_colorfulness_hsv(image)
+        assert actual == expected
+
+    def test_rgb_endpoint(
+        self,
+        client: TestClient,
+        image: PilImage,
+        image_io: io.BytesIO,
+        image_filename: str,
+    ):
+        res = client.post(
+            "/colorfulness/rgb",
+            files={"image_file": (image_filename, image_io)},
+        )
+        res.raise_for_status()
+
+        actual = res.json()
+        expected = get_colorfulness_rgb(image)
         assert actual == expected

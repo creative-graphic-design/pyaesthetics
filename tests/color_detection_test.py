@@ -206,6 +206,6 @@ class TestColorDetection(PyaestheticsTestCase):
         output = get_colors_w3c(image, n_colors=16, is_plot=is_plot)
 
         if is_plot:
-            assert output.encoded_image is not None and isinstance(output.encoded_image, PilImage)
+            assert output.encoded_image is not None and isinstance(output.encoded_image, str)
         else:
             assert output.encoded_image is None

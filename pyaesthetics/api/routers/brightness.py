@@ -7,7 +7,7 @@ router = APIRouter(prefix="/brightness", tags=["Brightness"])
 
 
 @router.post(
-    "/relative-luminance/bt601",
+    "/bt601",
     response_description="Mean brightness based on BT.601 standard.",
 )
 async def bt601_endpoint(
@@ -23,7 +23,7 @@ async def bt601_endpoint(
 
 
 @router.post(
-    "/relative-luminance/bt709",
+    "/bt709",
     response_description="Mean brightness based on BT.709 standard.",
 )
 async def bt709_endpoint(

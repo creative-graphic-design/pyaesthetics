@@ -1,9 +1,7 @@
-import cv2
-import numpy as np
 from fastapi import APIRouter, File, UploadFile
 
 from pyaesthetics.api.utils import get_image_from_upload_file
-from pyaesthetics.colorfulness import ColorfulnessOutput, get_colorfulness_hsv, get_colorfulness_rgb
+from pyaesthetics.colorfulness import get_colorfulness_hsv, get_colorfulness_rgb
 
 router = APIRouter(prefix="/colorfulness", tags=["Colorfulness"])
 
