@@ -50,7 +50,7 @@ class TestSymmetryEndpoint(PyaestheticsTestCase):
 
         expected = get_symmetry(
             image,
-            min_std=min_size,
+            min_std=min_std,
             min_size=min_size,
             is_plot=is_plot,
         )

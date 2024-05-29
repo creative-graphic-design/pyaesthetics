@@ -83,9 +83,13 @@ class TestSpaceBasedDecompositionEndpoint(PyaestheticsTestCase):
 
         expected = get_areas(
             image,
-            is_plot=True,
-            is_coordinates=True,
-            is_areatype=True,
+            min_area=min_area,
+            is_resize=is_resize,
+            resized_w=resized_w,
+            resized_h=resized_h,
+            is_plot=is_plot,
+            is_coordinates=is_coordinates,
+            is_areatype=is_areatype,
         )
         assert actual == expected
 
