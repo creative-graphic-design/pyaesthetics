@@ -20,6 +20,7 @@ from PIL import Image
 from pydantic import BaseModel
 
 from pyaesthetics.utils import decode_image, detect_text, encode_image
+from pyaesthetics.utils.text import TextDetector
 from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
@@ -105,11 +106,14 @@ def _plot_contours(img_arr: np.ndarray, bboxes: List[np.ndarray]) -> PilImage:
     return Image.fromarray(img_arr)
 
 
-def _get_area_type(is_areatype: bool, imgportion: np.ndarray) -> Optional[AreaType]:
+def _get_area_type(
+    is_areatype: bool, imgportion: np.ndarray, text_detector: Optional[TextDetector] = None
+) -> Optional[AreaType]:
     if not is_areatype:
         return None
 
-    num_texts = detect_text(Image.fromarray(imgportion))
+    image = Image.fromarray(imgportion)
+    num_texts = detect_text(image, text_detector=text_detector)
     return "Text" if num_texts > 0 else "Image"
 
 
@@ -131,6 +135,7 @@ def get_areas(
     is_plot: bool = False,
     is_coordinates: bool = False,
     is_areatype: bool = False,
+    text_detector: Optional[TextDetector] = None,
 ) -> AreasOutput:
     """Adapted from https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/"""
     assert img.mode == "RGB", f"Image must be in RGB mode but is in {img.mode}"
@@ -190,7 +195,11 @@ def get_areas(
         if imgportion.size == 0:
             continue
 
-        area_type = _get_area_type(is_areatype, imgportion)
+        area_type = _get_area_type(
+            is_areatype=is_areatype,
+            imgportion=imgportion,
+            text_detector=text_detector,
+        )
         area_coordinates = _get_area_coordinates(
             is_coordinates=is_coordinates, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax
         )

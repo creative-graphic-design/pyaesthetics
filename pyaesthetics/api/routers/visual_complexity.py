@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, File, Query, Response, UploadFile
+from fastapi import APIRouter, File, Query, UploadFile
 
 from pyaesthetics.api.utils import get_image_from_upload_file
 from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_complexity
@@ -8,7 +8,7 @@ from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_co
 router = APIRouter(prefix="/visual-complexity", tags=["Visual complexity"])
 
 
-@router.post("/", response_class=Response, response_description="Visual complexity")
+@router.post("/", response_description="Visual complexity")
 async def visual_complexity_endpoint(
     image_file: UploadFile = File(..., description="image to analyze, in RGB"),
     min_std: Annotated[int, Query(description="Std threshold for subsequent splitting")] = 15,

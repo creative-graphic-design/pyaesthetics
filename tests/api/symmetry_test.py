@@ -4,19 +4,20 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from pyaesthetics.face_detection import GetFacesOutput, get_faces
+from pyaesthetics.symmetry import SymmetryOutput, get_symmetry
 from pyaesthetics.utils import PyaestheticsTestCase
 from pyaesthetics.utils.typehint import PilImage
 
 
-class TestFaceDetectionEndpoint(PyaestheticsTestCase):
+class TestSymmetryEndpoint(PyaestheticsTestCase):
     @pytest.fixture
     def image_filename(self) -> str:
-        return "turing-2018-bengio-hinton-lecun.jpg"
+        return "sample.jpg"
 
     @pytest.fixture
     def image(self, image_filename: str) -> PilImage:
-        return Image.open(self.FIXTURES_ROOT / image_filename)
+        sample_image_path = str(self.FIXTURES_ROOT / image_filename)
+        return Image.open(sample_image_path)
 
     @pytest.fixture
     def image_io(self, image: PilImage) -> io.BytesIO:
@@ -29,21 +30,28 @@ class TestFaceDetectionEndpoint(PyaestheticsTestCase):
         argnames="is_plot",
         argvalues=(True, False),
     )
-    def test_opencv_endpoint(
+    def test_get_symmetry_endpoint(
         self,
         client: TestClient,
-        is_plot: bool,
         image: PilImage,
         image_io: io.BytesIO,
         image_filename: str,
+        is_plot: bool,
+        min_std: int = 5,
+        min_size: int = 20,
     ):
         res = client.post(
-            "/face-detection/opencv",
+            url="/symmetry",
             files={"image_file": (image_filename, image_io)},
-            params={"is_plot": is_plot},
+            params={"min_std": min_std, "min_size": min_size, "is_plot": is_plot},
         )
         res.raise_for_status()
+        actual = SymmetryOutput(**res.json())
 
-        actual = GetFacesOutput(**res.json())
-        expected = get_faces(image, is_plot=is_plot)
+        expected = get_symmetry(
+            image,
+            min_std=min_size,
+            min_size=min_size,
+            is_plot=is_plot,
+        )
         assert actual == expected
