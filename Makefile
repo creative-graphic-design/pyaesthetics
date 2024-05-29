@@ -46,8 +46,8 @@ typecheck: install
 #
 
 .PHONY: test
-test:
-	poetry run pytest
+test: install-api
+	poetry run pytest -svx
 
 #
 # Development
@@ -55,4 +55,7 @@ test:
 
 .PHONY: run
 run:
-	uvicorn pyaesthetics.api.run:app --port $(PORT) --workers $(WORKERS)
+ifeq ($(WORKERS), 1)
+	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --reload
+else
+	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --workers $(WORKERS)

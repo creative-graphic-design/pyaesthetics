@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse, Response
-from pydantic import BaseModel
 
 from pyaesthetics.api.routers import (
     analysis,
