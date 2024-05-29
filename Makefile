@@ -45,17 +45,22 @@ typecheck: install
 # Testing
 #
 
-.PHONY: test
-test: install-api
-	poetry run pytest -svx
+.PHONY: test-package
+test-package: install
+	poetry run pytest -svx --ignore=tests/api/
+
+.PHONY: test-api
+test-api: install-api
+	poetry run pytest -svx tests/api/
 
 #
 # Development
 #
 
 .PHONY: run
-run:
+run: install-api
 ifeq ($(WORKERS), 1)
 	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --reload
 else
 	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --workers $(WORKERS)
+endif
