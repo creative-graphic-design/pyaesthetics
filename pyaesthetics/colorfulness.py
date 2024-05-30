@@ -10,7 +10,6 @@ import cv2
 import numpy as np
 from pydantic import BaseModel
 
-from pyaesthetics.utils import s_rgb_to_rgb
 from pyaesthetics.utils.typehint import PilImage
 
 ###############################################################################

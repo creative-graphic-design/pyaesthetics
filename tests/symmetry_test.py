@@ -1,12 +1,10 @@
-from typing import get_origin
-
 import numpy as np
 import pytest
 from PIL import Image
 
 from pyaesthetics.symmetry import get_symmetry
 from pyaesthetics.utils import PyaestheticsTestCase
-from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestSymmetry(PyaestheticsTestCase):
