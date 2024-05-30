@@ -1,3 +1,5 @@
+from typing import get_origin
+
 import numpy as np
 import pytest
 from PIL import Image
@@ -43,5 +45,5 @@ class TestSymmetry(PyaestheticsTestCase):
         output = get_symmetry(image, min_std=min_std, min_size=min_size, is_plot=True)
         assert output.images is not None
 
-        assert isinstance(output.images.left, Base64EncodedImage)
-        assert isinstance(output.images.right, Base64EncodedImage)
+        assert isinstance(output.images.left, str)  # `left` is equivalent to `Base64EncodedImage`
+        assert isinstance(output.images.right, str)  # `right` is equivalent to `Base64EncodedImage`

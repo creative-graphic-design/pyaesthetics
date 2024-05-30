@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image
 from pydantic import BaseModel
 
-from pyaesthetics.utils import decode_image
+from pyaesthetics.utils import decode_image, encode_image
 from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 ###############################################################################
@@ -297,8 +297,7 @@ def get_colors_w3c(
         if is_plot
         else None
     )
-
     return ColorDetectionOutput(
         color_scheme=colorscheme,
-        encoded_image=image,
+        encoded_image=encode_image(image) if image else None,
     )

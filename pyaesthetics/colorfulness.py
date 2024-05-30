@@ -70,7 +70,6 @@ def get_colorfulness_rgb(img: PilImage) -> float:
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
-    img_arr = s_rgb_to_rgb(img_arr)
 
     # First we initialize 3 arrays
     rs, gs, bs = [], [], []
