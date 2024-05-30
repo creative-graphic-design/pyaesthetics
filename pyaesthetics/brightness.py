@@ -1,16 +1,23 @@
 """
-This module contains function to evaluate the brightness of an image.
-It includes a converter for sRGB to RGB, evaluation of relative luminance according to
-BT.709 and BT.601
+Provides functions to evaluate the brightness of an image according to both BT.709 and BT.601 standards.
+
+The module includes a converter for sRGB to RGB, and functions to calculate the relative luminance of an image
+according to BT.709 and BT.601 standards. The brightness output is represented using a Pydantic model class.
 
 @author: Giulio Gabrieli, Shunsuke Kitada
-"""
 
-###############################################################################
-#                                                                             #
-#                                   Libraries                                 #
-#                                                                             #
-###############################################################################
+Classes
+-------
+BrightnessOutput : BaseModel
+    A Pydantic model class that represents the brightness output.
+
+Functions
+---------
+get_relative_luminance_bt709(img: PilImage) -> float
+    Calculates the relative luminance of an image using the BT.709 standard.
+get_relative_luminance_bt601(img: PilImage) -> float
+    Calculates the relative luminance of an image using the BT.601 standard.
+"""  # NOQA: E501
 
 from typing import Optional
 
@@ -20,31 +27,65 @@ from pydantic import BaseModel
 from pyaesthetics.utils import s_rgb_to_rgb
 from pyaesthetics.utils.typehint import PilImage
 
-###############################################################################
-#                                                                             #
-#                              Brightness                                     #
-#                                                                             #
-###############################################################################
-
-""" Thìs sections handles brigthness estimation. """
-
 
 class BrightnessOutput(BaseModel):
+    """
+    A Pydantic model class that represents the brightness output.
+
+    Attributes
+    ----------
+    bt709 : float
+        The BT.709 brightness output value. BT.709 is a standard for high-definition
+        digital TV broadcast and is used for HDTV systems. The value should be a float.
+
+    bt601 : float, optional
+        The BT.601 brightness output value, by default None. BT.601 is a standard for
+        standard-definition digital color TV and is used for SDTV systems. The value should
+        be a float if provided.
+    """
+
     bt709: float
     bt601: Optional[float] = None
 
 
 def get_relative_luminance_bt709(img: PilImage) -> float:
-    """This function evaluates the brightness of an image by mean of Y, where Y is evaluated as:
+    """
+    Calculate the relative luminance of an image using the BT.709 standard.
+
+    This function evaluates the brightness of an image by means of Y, where Y
+    is evaluated as:
 
     Y = 0.7152G + 0.0722B + 0.2126R
     B = mean(Y)
 
-    :param img: image to analyze, in RGB
-    :type img: numpy.ndarray
-    :return: mean brightness
-    :rtype: float
-    """
+    The image must be in RGB mode.
+
+    Parameters
+    ----------
+    img : PilImage
+        The image to analyze, in RGB.
+
+    Returns
+    -------
+    float
+        The mean brightness of the image.
+
+    Raises
+    ------
+    AssertionError
+        If the image is not in RGB mode.
+
+    Notes
+    -----
+    The BT.709 standard is used for high-definition digital TV broadcasts and
+    is used for HDTV systems.
+
+    Examples
+    --------
+    >>> img = Image.open('example.jpg')
+    >>> get_relative_luminance_bt709(img)
+    0.567
+    """  # NOQA: E501
     assert img.mode == "RGB", "Image must be in RGB mode"
 
     img_arr = np.array(img)
@@ -61,15 +102,42 @@ def get_relative_luminance_bt709(img: PilImage) -> float:
 
 
 def get_relative_luminance_bt601(img: PilImage) -> float:
-    """This function evaluates the brightness of an image by mean of Y, where Y is evaluated as:
+    """
+    Calculate the relative luminance of an image using the BT.601 standard.
+
+    This function evaluates the brightness of an image by means of Y, where Y
+    is evaluated as:
 
     Y = 0.587G + 0.114B + 0.299R
     B = mean(Y)
 
-    :param img: image to analyze, in RGB
-    :type img: numpy.ndarray
-    :return: mean brightness
-    :rtype: float
+    The image must be in RGB mode.
+
+    Parameters
+    ----------
+    img : PilImage
+        The image to analyze, in RGB.
+
+    Returns
+    -------
+    float
+        The mean brightness of the image.
+
+    Raises
+    ------
+    AssertionError
+        If the image is not in RGB mode.
+
+    Notes
+    -----
+    The BT.601 standard is used for standard-definition digital color TV and
+    is used for SDTV systems.
+
+    Examples
+    --------
+    >>> img = Image.open('example.jpg')
+    >>> get_relative_luminance_bt601(img)
+    0.467
     """
     assert img.mode == "RGB", "Image must be in RGB mode"
 

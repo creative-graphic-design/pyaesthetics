@@ -1,11 +1,31 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-This module contains function to evaluate the presence of different colors of an image.
-It uses the 16 basic colors defined in the W3C specifications.
+Provides functions for evaluating the presence of different colors in an image.
+
+The module includes functions to get a simplified color palette based on W3C colors, either using 16 basic colors
+or 140 extended colors. It also provides a Pydantic model class to represent the output of a color detection operation,
+and a function to plot a color palette image.
 
 @author: Giulio Gabrieli, Shunsuke Kitada
-"""
+
+Classes
+-------
+ColorDetectionOutput : BaseModel
+    A Pydantic model class that represents the output of a color detection operation.
+
+Functions
+---------
+get_color_names(ncolors: NColorType) -> Dict[str, Tuple[int, int, int]]
+    Retrieve a dictionary of color names and their corresponding RGB values based on the provided `ncolors`.
+map_indices_to_color_names(closest_color_indices, colors) -> List[str]
+    Map the indices of closest colors to their corresponding color names.
+get_colors_w3c(
+    img: PilImage,
+    n_colors: NColorType = 16,
+    is_plot: bool = False,
+    plotncolors: int = 5,
+) -> ColorDetectionOutput
+    Get a simplified color palette (W3C colors) from an image.
+"""  # NOQA: E501
 
 import io
 from typing import Dict, Final, List, Literal, Optional, Tuple
@@ -17,13 +37,25 @@ from pydantic import BaseModel
 from pyaesthetics.utils import decode_image, encode_image
 from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
-###############################################################################
-#                                                                             #
-#                  This section handles color recogntion                      #
-#                                                                             #
-###############################################################################
-
 NColorType = Literal[16, 140]
+"""
+This type hint indicates that the variable can only be one of the specific literal values: 16 or 140.
+
+It is used to restrict the value of a variable to be one of the specified literal or constant values.
+
+Parameters
+----------
+Literal[16, 140] : typing.Literal
+    The literal values 16 and 140.
+
+Examples
+--------
+>>> def function(color: NColorType):
+...     pass
+>>> function(16)  # This is valid
+>>> function(140)  # This is also valid
+>>> function(15)  # This will raise a type error
+"""  # NOQA: E501
 
 COLORS: Final[Dict[int, Dict[str, Tuple[int, int, int]]]] = {
     16: {
@@ -187,18 +219,110 @@ COLORS: Final[Dict[int, Dict[str, Tuple[int, int, int]]]] = {
         "YellowGreen": (154, 205, 50),
     },
 }
+"""
+A dictionary that maps color names to their corresponding RGB values.
+
+The dictionary contains two main keys: 16 and 140. Each key maps to a dictionary that contains color names 
+as keys and RGB values as values. The key 16 represents a set of 16 basic colors, and the key 140 represents 
+a set of 140 extended colors.
+
+Parameters
+----------
+Final[Dict[int, Dict[str, Tuple[int, int, int]]]] : typing.Final, typing.Dict
+    A dictionary that maps color names to their corresponding RGB values.
+
+Examples
+--------
+>>> COLORS[16]["Aqua"]
+(0, 255, 255)
+>>> COLORS[140]["AliceBlue"]
+(240, 248, 255)
+"""
 
 
 class ColorDetectionOutput(BaseModel):
+    """
+    A Pydantic model class that represents the output of a color detection operation.
+
+    Attributes
+    ----------
+    color_scheme : Dict[str, float]
+        A dictionary mapping color names to their corresponding proportions in the image.
+
+    encoded_image : Optional[Base64EncodedImage], default is None
+        The base64 encoded image. If provided, it can be decoded into a PIL image using the `image` property.
+
+    Properties
+    ----------
+    image : Optional[PilImage]
+        A property that decodes `encoded_image` into a PIL image. If `encoded_image` is None, this property
+        will also be None.
+
+    Examples
+    --------
+    >>> output = ColorDetectionOutput(color_scheme={"Red": 0.2, "Blue": 0.8}, encoded_image=encoded_image)
+    >>> output.color_scheme
+    {"Red": 0.2, "Blue": 0.8}
+    >>> output.image
+    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x500 at 0x7F1E7D9408E0>
+    """  # NOQA: E501
+
     color_scheme: Dict[str, float]
     encoded_image: Optional[Base64EncodedImage] = None
 
     @property
     def image(self) -> Optional[PilImage]:
+        """
+        A property that decodes `encoded_image` into a PIL image.
+
+        This property uses the `decode_image` function to decode the `encoded_image` attribute into a PIL image.
+        If `encoded_image` is None, this property will also be None.
+
+        Returns
+        -------
+        Optional[PilImage]
+            A PIL image if `encoded_image` is not None, otherwise None.
+
+        Examples
+        --------
+        >>> output = ColorDetectionOutput(color_scheme={"Red": 0.2, "Blue": 0.8}, encoded_image=encoded_image)
+        >>> output.image
+        <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x500 at 0x7F1E7D9408E0>
+        """  # NOQA: E501
         return decode_image(self.encoded_image) if self.encoded_image else None
 
 
 def get_color_names(ncolors: NColorType) -> Dict[str, Tuple[int, int, int]]:
+    """
+    Retrieve a dictionary of color names and their corresponding RGB values based on the provided `ncolors`.
+
+    The function uses the `COLORS` dictionary and returns the sub-dictionary corresponding to the provided `ncolors`.
+    If `ncolors` is 16, it returns a dictionary of 16 basic colors. If `ncolors` is 140, it returns a dictionary of
+    140 extended colors.
+
+    Parameters
+    ----------
+    ncolors : NColorType
+        The number of colors. It must be either 16 or 140.
+
+    Returns
+    -------
+    Dict[str, Tuple[int, int, int]]
+        A dictionary mapping color names to their corresponding RGB values.
+
+    Raises
+    ------
+    ValueError
+        If `ncolors` is not 16 or 140.
+
+    Examples
+    --------
+    >>> get_color_names(16)
+    {"Aqua": (0, 255, 255), "Black": (0, 0, 0), ...}
+
+    >>> get_color_names(140)
+    {"AliceBlue": (240, 248, 255), "AntiqueWhite": (250, 235, 215), ...}
+    """  # NOQA: E501
     try:
         return COLORS[ncolors]
     except KeyError:
@@ -206,6 +330,32 @@ def get_color_names(ncolors: NColorType) -> Dict[str, Tuple[int, int, int]]:
 
 
 def map_indices_to_color_names(closest_color_indices, colors) -> List[str]:
+    """
+    Map the indices of closest colors to their corresponding color names.
+
+    This function takes a list of indices representing the closest colors and a dictionary of colors,
+    and returns a list of color names corresponding to these indices.
+
+    Parameters
+    ----------
+    closest_color_indices : iterable
+        An iterable of indices representing the closest colors. Each index corresponds to a color in the `colors` dictionary.
+
+    colors : dict
+        A dictionary mapping color names to their corresponding RGB values.
+
+    Returns
+    -------
+    List[str]
+        A list of color names corresponding to the indices in `closest_color_indices`.
+
+    Examples
+    --------
+    >>> closest_color_indices = [0, 2, 1]
+    >>> colors = {"Red": (255, 0, 0), "Green": (0, 255, 0), "Blue": (0, 0, 255)}
+    >>> map_indices_to_color_names(closest_color_indices, colors)
+    ["Red", "Blue", "Green"]
+    """  # NOQA: E501
     colorscheme = []
 
     # Map the indices to color names
@@ -222,23 +372,43 @@ def get_colors_w3c(
     is_plot: bool = False,
     plotncolors: int = 5,
 ) -> ColorDetectionOutput:
-    """This functions is used to get a simplified color palette (W3C colors).
-    It can be used with 16 (https://www.html-color-names.com/basic-color-names.php) or 140 colors (https://www.w3schools.com/colors/colors_names.asp)
+    """
+    Get a simplified color palette (W3C colors) from an image.
 
-    F = 255
-    C0 = 192
-    80 = 128
+    This function analyzes an image and returns a simplified color palette based on W3C colors.
+    It can be used with either 16 basic colors or 140 extended colors.
 
-    :param img: image to analyze in RGB
-    :type img: numpy.ndarray
-    :param ncolors: number of colors to use
-    :type ncolors: int
-    :param plot: whether to plot a color pallette image
-    :type plot: boolean
-    :param plotncolors: number of colors to use in the pallette image
-    :type plotncolors: int
-    :return: percentage distribution of colors according to the W3C sixteens basic colors
-    :rtype: list of shape ncolors x 2, where x[0] is the color name and x[1] the percentage of pixels most similar to that color in the image
+    Parameters
+    ----------
+    img : PilImage
+        The image to analyze, in RGB.
+    n_colors : NColorType, optional
+        The number of colors to use. It must be either 16 or 140, by default 16.
+    is_plot : bool, optional
+        Whether to plot a color palette image, by default False.
+    plotncolors : int, optional
+        The number of colors to use in the palette image, by default 5.
+
+    Returns
+    -------
+    ColorDetectionOutput
+        An object that represents the color detection output. It contains a `color_scheme` attribute that
+        is a dictionary mapping color names to their corresponding proportions in the image, and an `image`
+        attribute that is a PIL image if `is_plot` is True, otherwise None.
+
+    Raises
+    ------
+    ValueError
+        If `n_colors` is not 16 or 140.
+
+    Examples
+    --------
+    >>> img = Image.open('example.jpg')
+    >>> output = get_colors_w3c(img, n_colors=16, is_plot=True, plotncolors=5)
+    >>> output.color_scheme
+    {"Red": 0.2, "Blue": 0.8, ...}
+    >>> output.image
+    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x500 at 0x7F1E7D9408E0>
     """  # NOQA: E501
     assert img.mode == "RGB", "Image must be in RGB mode"
 
@@ -270,6 +440,32 @@ def get_colors_w3c(
     colorscheme = {k: float(v) for k, v in sorted(colorscheme.items())}
 
     def plot_image(colorscheme: Dict[str, float], plotncolors: int, n_colors: int):
+        """
+        Plot a color palette image using the top `plotncolors` colors from `colorscheme`.
+
+        This function creates a color palette image with the top `plotncolors` colors from `colorscheme`.
+        The colors are sorted in descending order of their proportions in `colorscheme`.
+
+        Parameters
+        ----------
+        colorscheme : Dict[str, float]
+            A dictionary mapping color names to their corresponding proportions.
+        plotncolors : int
+            The number of colors to use in the palette image.
+        n_colors : int
+            The total number of colors in `colorscheme`.
+
+        Returns
+        -------
+        PilImage
+            A PIL image of the color palette.
+
+        Examples
+        --------
+        >>> colorscheme = {"Red": 0.2, "Blue": 0.8}
+        >>> plot_image(colorscheme, plotncolors=2, n_colors=16)
+        <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x500 at 0x7F1E7D9408E0>
+        """  # NOQA: E501
         import matplotlib.patches as patches
         import matplotlib.pyplot as plt
 
