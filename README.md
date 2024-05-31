@@ -5,11 +5,25 @@
 # pyaesthetics
 [![CI](https://github.com/creative-graphic-design/pyaesthetics/actions/workflows/ci.yml/badge.svg)](https://github.com/creative-graphic-design/pyaesthetics/actions/workflows/ci.yml)
 
+## Install the package
+
 ```shell
 pip install "pyaesthetics[tesseract, visualization] @ git+https://github.com/creative-graphic-design/pyaesthetics"
 ```
 
+## Run the package as API
+
+```shell
+git clone https://github.com/creative-graphic-design/pyaesthetics
+cd pyaeshtetics
+
+make run-api PORT=7860 WORKERS=1 # WORKERS > 1 starts the API in multiple processes, disabling the --reload option.
+```
+
 ---
+
+> [!WARNING]  
+> Below is the original README from the original repository:
 
 ![GitHub release](https://img.shields.io/github/release/Gabrock94/prettywebsite.svg)
 [![PyPI](https://img.shields.io/pypi/v/pyaesthetics.svg)](https://badge.fury.io/py/pyaesthetics)
