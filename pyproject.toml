@@ -48,7 +48,7 @@ pytest = ">=6.0.0"
 httpx = "^0.27.0"
 
 [tool.ruff]
-exclude = [".git", '.mypy_cache', '.ruff_cache']
+exclude = [".git", ".mypy_cache", ".ruff_cache", "tests"]
 line-length = 100
 
 [tool.ruff.lint]
