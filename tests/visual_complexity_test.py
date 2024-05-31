@@ -1,8 +1,8 @@
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils.typehint import PilImage
 from pyaesthetics.visual_complexity import get_visual_complexity
 
 

@@ -25,24 +25,32 @@ classifiers = [
 python = "^3.10"
 pillow = "^10.3.0"
 opencv-python = "^4.9.0.80"
-matplotlib = { version = "^3.8.4", optional = true }
 imutils = "^0.5.4"
-pytesseract = { version = "^0.3.10", optional = true }
 scipy = "^1.13.0"
 scikit-image = "^0.23.2"
+pydantic = ">=2.0.0"
+# Optional dependencies for extra features
+pytesseract = { version = "^0.3.10", optional = true }
+matplotlib = { version = "^3.8.4", optional = true }
+# Optional dependencies for API
+fastapi = { version = "^0.110.1", optional = true }
+uvicorn = { extras = ["standard"], version = "^0.29.0", optional = true }
+python-multipart = { version = "^0.0.9", optional = true }
 
 [tool.poetry.extras]
-visualization = ["matplotlib"]
 tesseract = ["pytesseract"]
-all = ["pytesseract", "matplotlib"]
+visualization = ["matplotlib"]
+api = ["fastapi", "uvicorn", "python-multipart"]
+all = ["pytesseract", "matplotlib", "fastapi", "uvicorn"]
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.1.5"
 mypy = ">=1.0.0"
 pytest = ">=6.0.0"
+httpx = "^0.27.0"
 
 [tool.ruff]
-exclude = [".git", '.mypy_cache', '.ruff_cache']
+exclude = [".git", ".mypy_cache", ".ruff_cache", "tests", "docs", "api"]
 line-length = 100
 
 [tool.ruff.lint]
@@ -50,10 +58,14 @@ select = [
     "F", # Pyflakes (default)
     "E", # Pycodestyle (default)
     "N", # pep8-naming
+    "D", # pydocstyle
 ]
 ignore = [
     "E743", # ambiguous-function-name
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.mypy]
 python_version = "3.10"

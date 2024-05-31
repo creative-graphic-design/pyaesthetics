@@ -1,13 +1,22 @@
 import numpy as np
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.symmetry import get_symmetry
 from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestSymmetry(PyaestheticsTestCase):
+    @pytest.fixture
+    def image_filename(self) -> str:
+        return "sample.jpg"
+
+    @pytest.fixture
+    def image(self, image_filename: str) -> PilImage:
+        sample_image_path = str(self.FIXTURES_ROOT / image_filename)
+        return Image.open(sample_image_path)
+
     @pytest.mark.parametrize(
         argnames="min_std, min_size, expected_result",
         argvalues=(
@@ -18,10 +27,8 @@ class TestSymmetry(PyaestheticsTestCase):
             ),
         ),
     )
-    def test_symmetry(self, min_std: int, min_size: int, expected_result: float):
-        sample_image_path = str(self.FIXTURES_ROOT / "sample.jpg")
-        img = Image.open(sample_image_path)
-        output = get_symmetry(img, min_std=min_std, min_size=min_size)
+    def test_symmetry(self, image: PilImage, min_std: int, min_size: int, expected_result: float):
+        output = get_symmetry(image, min_std=min_std, min_size=min_size)
         assert not isinstance(output.degree, np.floating)
 
         actual_result = output.degree
@@ -32,11 +39,9 @@ class TestSymmetry(PyaestheticsTestCase):
         argnames="min_std, min_size",
         argvalues=((5, 20),),
     )
-    def test_plot(self, min_std: int, min_size: int):
-        sample_image_path = str(self.FIXTURES_ROOT / "sample.jpg")
-        img = Image.open(sample_image_path)
-        output = get_symmetry(img, min_std=min_std, min_size=min_size, is_plot=True)
+    def test_plot(self, image: PilImage, min_std: int, min_size: int):
+        output = get_symmetry(image, min_std=min_std, min_size=min_size, is_plot=True)
         assert output.images is not None
 
-        assert isinstance(output.images.left, PilImage)
-        assert isinstance(output.images.right, PilImage)
+        assert isinstance(output.images.left, str)  # `left` is equivalent to `Base64EncodedImage`
+        assert isinstance(output.images.right, str)  # `right` is equivalent to `Base64EncodedImage`

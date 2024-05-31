@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.brightness import (
     get_relative_luminance_bt601,
     get_relative_luminance_bt709,
 )
 from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestBrightness(PyaestheticsTestCase):

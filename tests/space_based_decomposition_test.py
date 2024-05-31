@@ -1,6 +1,5 @@
 import pytest
 from PIL import Image
-from PIL.Image import Image as PilImage
 
 from pyaesthetics.space_based_decomposition import (
     AreaCoordinates,
@@ -10,7 +9,8 @@ from pyaesthetics.space_based_decomposition import (
     get_areas,
     get_text_image_ratio,
 )
-from pyaesthetics.utils import PyaestheticsTestCase
+from pyaesthetics.utils import PyaestheticsTestCase, encode_image
+from pyaesthetics.utils.typehint import PilImage
 
 
 class TestSpaceBasedDecomposition(PyaestheticsTestCase):
@@ -53,7 +53,9 @@ class TestSpaceBasedDecomposition(PyaestheticsTestCase):
                     area_type="Image",
                 ),
             ],
-            image=Image.new("RGB", size=(image.width, image.height), color="white"),
+            encoded_image=encode_image(
+                Image.new("RGB", size=(image.width, image.height), color="white")
+            ),
         )
         assert len(actual.areas) == len(expected.areas)
 
