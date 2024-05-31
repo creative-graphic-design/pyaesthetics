@@ -237,7 +237,7 @@ Examples
 (0, 255, 255)
 >>> COLORS[140]["AliceBlue"]
 (240, 248, 255)
-"""
+"""  # NOQA: E501
 
 
 class ColorDetectionOutput(BaseModel):
