@@ -297,6 +297,7 @@ def analyze_image(
     img: PilImage,
     method: AnalyzeMethod = "fast",
     is_resize: bool = True,
+    is_plot: bool = False,
     resized_w: int = 600,
     resized_h: int = 400,
     min_std: int = 10,
@@ -317,6 +318,8 @@ def analyze_image(
         The method of analysis to use. Valid methods are 'fast' and 'complete'. Default is 'fast'.
     is_resize : bool, optional
         A flag to indicate if the image should be resized to reduce computational workload. Default is True.
+    is_plot : bool, optional
+        A flag to indicate if the plot of the symmetry, faces, colors, and areas should be displayed. Default is False.
     resized_w : int, optional
         The width to resize the image to if is_resize is True. Default is 600.
     resized_h : int, optional
@@ -351,6 +354,7 @@ def analyze_image(
             img=img,
             min_std=min_std,
             min_size=min_size,
+            is_plot=is_plot,
         )
     elif method == "complete":
         return analyze_image_complete(
@@ -362,6 +366,7 @@ def analyze_image(
             resized_h=resized_h,
             text_detector=text_detector,
             face_detector=face_detector,
+            is_plot=is_plot,
         )
     else:
         raise ValueError(f"Invalid method {method}. Valid methods are {get_args(AnalyzeMethod)}")

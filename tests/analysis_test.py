@@ -21,6 +21,10 @@ class TestAnalysis(PyaestheticsTestCase):
         argnames="method",
         argvalues=get_args(AnalyzeMethod),
     )
-    def test_analyze_image(self, method: AnalyzeMethod, image: PilImage):
-        output = analyze_image(image, method=method)
+    @pytest.mark.parametrize(
+        argnames="is_plot",
+        argvalues=[True, False],
+    )
+    def test_analyze_image(self, method: AnalyzeMethod, image: PilImage, is_plot: bool):
+        output = analyze_image(image, method=method, is_plot=is_plot)
         assert isinstance(output, ImageAnalysisOutput)
