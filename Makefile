@@ -58,7 +58,7 @@ test-api: install-api
 #
 
 .PHONY: run-api
-run: install-api
+run-api: install-api
 ifeq ($(WORKERS), 1)
 	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --reload
 else
