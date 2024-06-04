@@ -2,7 +2,7 @@
 Provides functions for detecting faces in an image.
 
 The module includes a function to detect faces in an image using a face detector, with the default being
-Cv2CancadeClassifier. It also provides a Pydantic model class to represent the output of a face detection operation.
+Cv2CascadeClassifierDetector. It also provides a Pydantic model class to represent the output of a face detection operation.
 
 @author: Giulio Gabrieli, Shunsuke Kitada
 
@@ -25,7 +25,12 @@ from typing import List, Optional, Tuple
 
 from pydantic import BaseModel
 
-from pyaesthetics.utils import Cv2CancadeClassifier, FaceDetector, decode_image, encode_image
+from pyaesthetics.utils import (
+    Cv2CascadeClassifierDetector,
+    FaceDetector,
+    decode_image,
+    encode_image,
+)
 from pyaesthetics.utils.typehint import Base64EncodedImage, PilImage
 
 
@@ -100,7 +105,7 @@ def get_faces(
     """
     Detect faces in an image using a face detector.
 
-    This function uses a face detector (default is Cv2CancadeClassifier) to detect faces in an image. It returns
+    This function uses a face detector (default is Cv2CascadeClassifierDetector) to detect faces in an image. It returns
     the bounding boxes of the detected faces, the number of faces, and optionally the images of the detected faces.
 
     Parameters
@@ -110,7 +115,7 @@ def get_faces(
     is_plot : bool, optional
         Whether to return the images of the detected faces, by default False.
     face_detector : Optional[FaceDetector], optional
-        The face detector to use. If not provided, Cv2CancadeClassifier is used by default.
+        The face detector to use. If not provided, Cv2CascadeClassifierDetector is used by default.
 
     Returns
     -------
@@ -130,7 +135,7 @@ def get_faces(
     >>> output.images
     [<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=500x500 at 0x7F1E7D9408E0>]
     """  # NOQA: E501
-    face_detector = face_detector or Cv2CancadeClassifier()
+    face_detector = face_detector or Cv2CascadeClassifierDetector()
     bboxes = face_detector(img)
 
     images = face_detector.plot_bboxes(img, bboxes) if is_plot else None
