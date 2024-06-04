@@ -34,7 +34,7 @@ from pyaesthetics.brightness import (
     get_relative_luminance_bt601,
     get_relative_luminance_bt709,
 )
-from pyaesthetics.color_detection import ColorDetectionOutput, get_colors_w3c
+from pyaesthetics.color_detection import ColorDetectionOutput, NColorType, get_colors_w3c
 from pyaesthetics.colorfulness import (
     ColorfulnessOutput,
     get_colorfulness_hsv,
@@ -49,6 +49,7 @@ from pyaesthetics.space_based_decomposition import (
     get_text_image_ratio,
 )
 from pyaesthetics.symmetry import SymmetryOutput, get_symmetry
+from pyaesthetics.utils import FaceDetector, TextDetector
 from pyaesthetics.utils.typehint import PilImage
 from pyaesthetics.visual_complexity import VisualComplexityOutput, get_visual_complexity
 
@@ -76,8 +77,6 @@ Examples
 class ImageAnalysisOutput(BaseModel):
     """
     A class used to represent the output of an image analysis.
-
-    ...
 
     Attributes
     ----------
@@ -184,6 +183,9 @@ def analyze_image_complete(
     is_resize: bool,
     resized_w: int,
     resized_h: int,
+    n_colors: NColorType = 140,
+    text_detector: Optional[TextDetector] = None,
+    face_detector: Optional[FaceDetector] = None,
 ) -> ImageAnalysisOutput:
     """
     Perform a complete analysis of an image and return an ImageAnalysisOutput object.
@@ -205,6 +207,12 @@ def analyze_image_complete(
         The width to resize the image to for area calculations.
     resized_h : int
         The height to resize the image to for area calculations.
+    n_colors : NColorType, optional
+        The number of colors to detect in the image. Default is 140.
+    text_detector : TextDetector, optional
+        An instance of a text detector to use for text detection. Default is None.
+    face_detector : FaceDetector, optional
+        An instance of a face detector to use for face detection. Default is None.
 
     Returns
     -------
@@ -242,14 +250,15 @@ def analyze_image_complete(
     )
     saturation = get_saturation(img)
 
-    faces = get_faces(img=img)
-    colors = get_colors_w3c(img=img, n_colors=140)
+    faces = get_faces(img=img, face_detector=face_detector)
+    colors = get_colors_w3c(img=img, n_colors=n_colors)
 
     areas = get_areas(
         img,
         is_resize=is_resize,
         resized_w=resized_w,
         resized_h=resized_h,
+        text_detector=text_detector,
         is_areatype=True,
     )
     text_image_ratio = get_text_image_ratio(areas)
@@ -275,6 +284,8 @@ def analyze_image(
     resized_h: int = 400,
     min_std: int = 10,
     min_size: int = 20,
+    text_detector: Optional[TextDetector] = None,
+    face_detector: Optional[FaceDetector] = None,
 ) -> ImageAnalysisOutput:
     """
     Entry point for the automatic analysis of an image's aesthetic features.
@@ -297,6 +308,10 @@ def analyze_image(
         The minimum standard deviation for the Quadratic Tree Decomposition. Default is 10.
     min_size : int, optional
         The minimum size for the Quadratic Tree Decomposition. Default is 20.
+    text_detector : TextDetector, optional
+        An instance of a text detector to use for text detection. Default is None.
+    face_detector : FaceDetector, optional
+        An instance of a face detector to use for face detection. Default is None.
 
     Returns
     -------
@@ -328,6 +343,8 @@ def analyze_image(
             is_resize=is_resize,
             resized_w=resized_w,
             resized_h=resized_h,
+            text_detector=text_detector,
+            face_detector=face_detector,
         )
     else:
         raise ValueError(f"Invalid method {method}. Valid methods are {get_args(AnalyzeMethod)}")
