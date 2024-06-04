@@ -1,3 +1,7 @@
+from typing import List
+
+from fastapi import APIRouter
+
 from pyaesthetics.api.routers.analysis import router as analysis_router
 from pyaesthetics.api.routers.brightness import router as brightness_router
 from pyaesthetics.api.routers.color_detection import router as color_detection_router
@@ -23,3 +27,19 @@ __all__ = [
     "symmetry_router",
     "visual_complexity_router",
 ]
+
+
+def gather_routers() -> List[APIRouter]:
+    routers = [
+        analysis_router,
+        brightness_router,
+        color_detection_router,
+        colorfulness_router,
+        face_detection_router,
+        saturation_router,
+        space_based_decomposition_router,
+        symmetry_router,
+        visual_complexity_router,
+    ]
+    assert len(routers) == len(__all__)
+    return routers
