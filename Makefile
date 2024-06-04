@@ -53,6 +53,9 @@ test-package: install
 test-api: install-api
 	poetry run pytest -svx tests/api/
 
+.PHONY: test
+test: test-package test-api
+
 #
 # Development
 #
