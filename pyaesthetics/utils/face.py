@@ -56,7 +56,6 @@ class FaceDetector(object, metaclass=abc.ABCMeta):
         Detect faces in the image.
     """
 
-    @abc.abstractmethod
     def plot_bboxes(
         self, image: PilImage, bboxes: List[Tuple[int, int, int, int]]
     ) -> List[PilImage]:
