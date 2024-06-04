@@ -1,4 +1,4 @@
-from pyaesthetics.utils.color import s_rgb_to_rgb
+from pyaesthetics.utils.color import s_rgb_to_rgb  # NOQA: D104
 from pyaesthetics.utils.face import Cv2CascadeClassifierDetector, FaceDetector
 from pyaesthetics.utils.image import decode_image, encode_image
 from pyaesthetics.utils.quad_tree_decomposition import QuadTreeDecomposer
