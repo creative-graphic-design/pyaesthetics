@@ -7,14 +7,14 @@ from pyaesthetics.space_based_decomposition import (
     get_areas,
     get_text_image_ratio,
 )
-from pyaesthetics.utils.text import TesseractTextDetector
+from pyaesthetics.utils.text import TesseractTextDetector, TextDetector
 
 router = APIRouter(prefix="/space-based-decomposition", tags=["Space-based decomposition"])
 
 
-async def _get_areas(
+async def get_areas_async(
     image_file: UploadFile,
-    text_detector: TesseractTextDetector,
+    text_detector: TextDetector,
     min_area: int = 100,
     is_resize: bool = True,
     resized_w: int = 600,
@@ -49,7 +49,7 @@ async def get_areas_endpoint(
     is_coordinates: bool = False,
     is_areatype: bool = True,
 ) -> AreasOutput:
-    areas = await _get_areas(
+    areas = await get_areas_async(
         image_file=image_file,
         min_area=min_area,
         is_resize=is_resize,
@@ -75,7 +75,7 @@ async def get_text_image_ratio_endpoint(
     is_coordinates: bool = False,
     is_areatype: bool = True,
 ) -> TextImageRatioOutput:
-    areas = await _get_areas(
+    areas = await get_areas_async(
         image_file=image_file,
         min_area=min_area,
         is_resize=is_resize,
