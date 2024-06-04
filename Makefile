@@ -53,12 +53,15 @@ test-package: install
 test-api: install-api
 	poetry run pytest -svx tests/api/
 
+.PHONY: test
+test: test-package test-api
+
 #
 # Development
 #
 
 .PHONY: run-api
-run: install-api
+run-api: install-api
 ifeq ($(WORKERS), 1)
 	poetry run uvicorn pyaesthetics.api.run:app --port $(PORT) --reload
 else

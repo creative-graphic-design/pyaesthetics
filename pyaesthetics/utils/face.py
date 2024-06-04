@@ -5,7 +5,7 @@ The `FaceDetector` class is an abstract base class that defines the interface fo
 Subclasses should implement the `__call__` method to detect faces in an image and the `plot_bboxes` method
 to visualize the detected bounding boxes on the image.
 
-The `Cv2CancadeClassifier` class is a concrete implementation of the `FaceDetector` interface using
+The `Cv2CascadeClassifierDetector` class is a concrete implementation of the `FaceDetector` interface using
 OpenCV's Cascade Classifier for face detection. The classifier uses a Haar cascade trained on frontal faces.
 
 Classes
@@ -13,17 +13,17 @@ Classes
 FaceDetector
     Abstract base class for face detection.
 
-Cv2CancadeClassifier
+Cv2CascadeClassifierDetector
     Face detection using OpenCV's Cascade Classifier.
 
 Example
 -------
-To use this module, import it and instantiate an object of the `Cv2CancadeClassifier` class:
+To use this module, import it and instantiate an object of the `Cv2CascadeClassifierDetector` class:
 
     import cv2_face_detection_module
     from PIL import Image
 
-    face_detector = cv2_face_detection_module.Cv2CancadeClassifier()
+    face_detector = cv2_face_detection_module.Cv2CascadeClassifierDetector()
     image = Image.open('face_image.jpg')
     bboxes = face_detector(image)
     images_with_bboxes = face_detector.plot_bboxes(image, bboxes)
@@ -56,7 +56,6 @@ class FaceDetector(object, metaclass=abc.ABCMeta):
         Detect faces in the image.
     """
 
-    @abc.abstractmethod
     def plot_bboxes(
         self, image: PilImage, bboxes: List[Tuple[int, int, int, int]]
     ) -> List[PilImage]:
@@ -95,7 +94,7 @@ class FaceDetector(object, metaclass=abc.ABCMeta):
         raise NotImplementedError
 
 
-class Cv2CancadeClassifier(FaceDetector):
+class Cv2CascadeClassifierDetector(FaceDetector):
     """
     Face detection using OpenCV's Cascade Classifier.
 
