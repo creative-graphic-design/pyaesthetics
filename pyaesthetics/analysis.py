@@ -117,6 +117,7 @@ def analyze_image_fast(
     img: PilImage,
     min_std: int,
     min_size: int,
+    is_plot: bool = False,
 ) -> ImageAnalysisOutput:
     """
     Analyze an image quickly and return an ImageAnalysisOutput object.
@@ -132,6 +133,8 @@ def analyze_image_fast(
         The minimum standard deviation for the visual complexity and symmetry calculations.
     min_size : int
         The minimum size for the visual complexity and symmetry calculations.
+    is_plot : bool, optional
+        A flag to indicate if the plot of the symmetry should be displayed. Default is False.
 
     Returns
     -------
@@ -157,6 +160,7 @@ def analyze_image_fast(
         img=img,
         min_std=min_std,
         min_size=min_size,
+        is_plot=is_plot,
     )
     colorfulness = ColorfulnessOutput(
         rgb=get_colorfulness_rgb(img),
@@ -183,6 +187,7 @@ def analyze_image_complete(
     is_resize: bool,
     resized_w: int,
     resized_h: int,
+    is_plot: bool = False,
     n_colors: NColorType = 140,
     text_detector: Optional[TextDetector] = None,
     face_detector: Optional[FaceDetector] = None,
@@ -207,6 +212,8 @@ def analyze_image_complete(
         The width to resize the image to for area calculations.
     resized_h : int
         The height to resize the image to for area calculations.
+    is_plot : bool, optional
+        A flag to indicate if the plot of the symmetry, faces, colors, and areas should be displayed. Default is False.
     n_colors : NColorType, optional
         The number of colors to detect in the image. Default is 140.
     text_detector : TextDetector, optional
@@ -239,6 +246,7 @@ def analyze_image_complete(
         img=img,
         min_std=min_std,
         min_size=min_size,
+        is_plot=is_plot,
     )
     colorfulness = ColorfulnessOutput(
         rgb=get_colorfulness_rgb(img),
@@ -250,8 +258,16 @@ def analyze_image_complete(
     )
     saturation = get_saturation(img)
 
-    faces = get_faces(img=img, face_detector=face_detector)
-    colors = get_colors_w3c(img=img, n_colors=n_colors)
+    faces = get_faces(
+        img=img,
+        face_detector=face_detector,
+        is_plot=is_plot,
+    )
+    colors = get_colors_w3c(
+        img=img,
+        n_colors=n_colors,
+        is_plot=is_plot,
+    )
 
     areas = get_areas(
         img,
@@ -259,6 +275,7 @@ def analyze_image_complete(
         resized_w=resized_w,
         resized_h=resized_h,
         text_detector=text_detector,
+        is_plot=is_plot,
         is_areatype=True,
     )
     text_image_ratio = get_text_image_ratio(areas)
