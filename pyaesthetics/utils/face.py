@@ -74,7 +74,13 @@ class FaceDetector(object, metaclass=abc.ABCMeta):
         List[PilImage]
             A list of images with bounding boxes drawn on them.
         """
-        raise NotImplementedError
+        images = []
+        for x, y, w, h in bboxes:
+            img_copy = image.copy()
+            draw = ImageDraw.Draw(img_copy)
+            draw.rectangle((x, y, x + w, y + h), outline="red")
+            images.append(img_copy)
+        return images
 
     @abc.abstractmethod
     def __call__(self, image: PilImage) -> List[Tuple[int, int, int, int]]:
@@ -120,32 +126,6 @@ class Cv2CascadeClassifierDetector(FaceDetector):
         self.cascade = cv2.CascadeClassifier(
             filename=cv2.data.haarcascades + "haarcascade_frontalface_default.xml"  # type: ignore
         )
-
-    def plot_bboxes(
-        self, image: PilImage, bboxes: List[Tuple[int, int, int, int]]
-    ) -> List[PilImage]:
-        """
-        Draw bounding boxes on the image.
-
-        Parameters
-        ----------
-        image : PilImage
-            The input image.
-        bboxes : List[Tuple[int, int, int, int]]
-            A list of bounding boxes, where each box is a tuple of (x, y, width, height).
-
-        Returns
-        -------
-        List[PilImage]
-            A list of images with bounding boxes drawn on them.
-        """
-        images = []
-        for x, y, w, h in bboxes:
-            img_copy = image.copy()
-            draw = ImageDraw.Draw(img_copy)
-            draw.rectangle((x, y, x + w, y + h), outline="red")
-            images.append(img_copy)
-        return images
 
     def __call__(self, image: PilImage) -> List[Tuple[int, int, int, int]]:
         """
